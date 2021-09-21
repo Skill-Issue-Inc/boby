@@ -494,9 +494,12 @@ public class MyEventListener extends ListenerAdapter {
 								+ "**type \"fun\" at the beginning of evey command** \n"
 								+ "help - displays this fun message\n"
 								+ "pay (mention) (amount) - Pays (mention) funbucks in (amount) from _your fun bank_\n"
-								+ "pr[ofile] (mention) - Displays Funny:tm: Profile\n"
+								+ "pr{ofile} [mention] - Displays Funny:tm: Profile\n"
 								+ "> MAX ADMIN STUFFS:\n"
-								+ "fine (mention) (amount) \n").queue();
+								+ "fine (mention) (amount) \n"
+								+ "grant (mention) (amount) \n"
+								+ "ban (mention) \n"
+								+ "pardon (mention)\n").queue();
 					
 					//pAY THE MANS THE MONEYZ (c) (R) (k)
 					if(command.startsWith(pre + "pay"))

@@ -23,24 +23,6 @@ public class FunProfile extends Object implements Serializable, Comparable<FunPr
 	                .append(this.adminedit)
 	                .append(this.adminedit).toString();
 	    }*/
-		/*public void setFunbucks(float funbucks) {
-			this.funbucks = funbucks;
-		}
-		public float getFunbucks() {
-			return this.funbucks;
-		}
-		public void setOwnerid(Long funbucks) {
-			this.ownerid = funbucks;
-		}
-		public long getOwnerid() {
-			return this.ownerid;
-		}
-		
-		public void writeObject(ObjectOutputStream oos) 
-	      throws IOException {
-	        oos.defaultWriteObject();
-	        oos.writeObject(address.getHouseNumber());
-	    }*/
 		public void SetUserID() {
 			ownerid = owner.getIdLong();
 		}
