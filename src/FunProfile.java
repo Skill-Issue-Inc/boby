@@ -8,6 +8,7 @@ public class FunProfile extends Object implements Serializable, Comparable<FunPr
 		 * FunData
 		 */
 		private static final long serialVersionUID = 1L;
+		public static int defaultvalue = 25;
 		/*public FunProfile(User parent) {
 			funbucks = 25;
 			ownerid = parent.getIdLong();
@@ -30,6 +31,14 @@ public class FunProfile extends Object implements Serializable, Comparable<FunPr
 			owner = api.retrieveUserById(ownerid).complete();
 			System.out.println(owner + " " + ownerid);
 		}
+		public String GetName() {
+			if(notif) {
+				return owner.getAsMention();
+			}
+			else {
+				return owner.getAsTag();
+			}
+		}
 		
 		public float funbucks = 25;
 		public transient User owner;
@@ -38,6 +47,8 @@ public class FunProfile extends Object implements Serializable, Comparable<FunPr
 		public int inboundt = 0;
 		public int outboundt = 0;
 		public int adminedit = 0;
+		public int blanketedit = 0;
+		public boolean notif = true;
 		public boolean banned = false;
 		@Override
 		public int compareTo(FunProfile o) {
