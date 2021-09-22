@@ -147,6 +147,7 @@ public class MyEventListener extends ListenerAdapter {
 						"join - boby joins vc for no reason\r\n" +
 						"stop - boby leaves vc\r\n" +
 						"????? - I just wanna tell you how I'm feeling\r\n" + 
+						"face - Sends user's profile picture\r\n" + 
 						"```\r\n" + 
 						"Other Features:\r\n" + 
 						"```\r\n" + 
@@ -367,6 +368,15 @@ public class MyEventListener extends ListenerAdapter {
 				}
 				channel.sendMessage(sendString).addFile(ret.file).queue();
 			}
+			if(command.startsWith("flip")) {
+				FileReturn ret = getFileFromDir("flip", null);
+				String sendString = "Error";
+				if(ret.index == 1)
+					sendString = "**Heads! :+1:**";
+				if(ret.index == 0)
+					sendString = "**Tails! :-1:**";
+				channel.sendMessage(sendString).addFile(ret.file).queue();
+			}
 			if(command.startsWith("spamE")) {
 				String l = command.substring(6);
 				String E = "";
@@ -528,6 +538,23 @@ public class MyEventListener extends ListenerAdapter {
 			}
 			if(command.startsWith("sing")) {
 				sing = true;
+			}
+			if(command.startsWith("face")) {
+				User funguy;
+				List<Member> mentionsList = inputMessage.getMentionedMembers();
+				if(mentionsList.size() > 1) {
+					channel.sendMessage("crig only 1 mentn plz").queue();
+				}
+				if(mentionsList.size() < 1) {
+					funguy = event.getAuthor();
+				}
+				try {
+					funguy = mentionsList.get(0).getUser();
+				} catch (Exception e) {
+					channel.sendMessage("Error in getting mention").queue();
+					return;
+				}
+				channel.sendMessage(funguy.getAvatarUrl()).queue();
 			}
 			
 			
