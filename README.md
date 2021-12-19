@@ -35,6 +35,7 @@ E [int] - E image repo
 addE {image} - Adds to E image repo  
 revive - revive a dead boby  
 amongus or amogus - Are you imposter? Find out with this horrible command!  
+thewalrus72 - accuses you of blasphemy
 ### Other Features:  
 -lyric continuation complex to it so that if you say any full lyric line in your sentence it will send the next one  
 -responds when boby is mentioned  
