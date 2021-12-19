@@ -569,8 +569,11 @@ public class MyEventListener extends ListenerAdapter {
 						"  ####/_\\####\r\n" + 
 						"     |___|\r\n" + 
 						"    /_____\\```").queue();
+			}//The best command™.
+			if(command.toLowerCase().startsWith("thewalrus72")) {
+				channel.sendMessage("woah, you mean god?").queue();
 			}
-			
+
 			
 			
 			
