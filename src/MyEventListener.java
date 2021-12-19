@@ -556,12 +556,25 @@ public class MyEventListener extends ListenerAdapter {
 				}
 				channel.sendMessage(funguy.getAvatarUrl()).queue();
 			}
+			if(command.startsWith("shrine")) {
+				channel.sendMessage("```" + 
+						"       .\r\n" + 
+						"       |\r\n" + 
+						"  .   ]#[   .\r\n" + 
+						"   \\_______/\r\n" + 
+						".    ]###[    .\r\n" + 
+						" \\__]#.-.#[__/\r\n" + 
+						"  |___| |___|\r\n" + 
+						"  |___|_|___|\r\n" + 
+						"  ####/_\\####\r\n" + 
+						"     |___|\r\n" + 
+						"    /_____\\```").queue();
+			}
 			
 			
 			
 			
-			
-			}//FUNNY HAHA MONEY CURRENCY MAX OWNED TM (R) INC. (c) TKOD
+			}//FUNNY HAHA MONEY CURRENCY MAX OWNED TM (R) INC. (c) TKOD DING DING DING DINM GISNG
 			if(command.startsWith("fun") || content.toLowerCase().startsWith(prefixString3)) { 
 				String pre = "fun";
 				if(content.toLowerCase().startsWith(prefixString3)) {
