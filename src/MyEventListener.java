@@ -571,10 +571,8 @@ public class MyEventListener extends ListenerAdapter {
 						"    /_____\\```").queue();
 			}//The best command™.
 			if(command.toLowerCase().startsWith("thewalrus72")) {
-				channel.sendMessage("woah, you mean god?").queue();
+				channel.sendMessage("that guy is pretty cool, I think").queue();
 			}
-
-			
 			
 			
 			}//FUNNY HAHA MONEY CURRENCY MAX OWNED TM (R) INC. (c) TKOD DING DING DING DINM GISNG
