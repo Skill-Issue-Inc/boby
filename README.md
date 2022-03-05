@@ -9,7 +9,7 @@ ping - approx ping
 say (string) - says the message  
 msg (mention) (string) - sends a DM from the bot to the user  
 msgid (UserID) (string) - sends a DM from the bot to the user  
-amsgid - (doesn't) work)
+amsgid - (doesn't) work)  
 motor [int] - Motor Image Repo  
 jojo [int] - Jojo Image Repo  
 img [int] - Public Image Repo  
