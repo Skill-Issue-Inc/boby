@@ -23,7 +23,7 @@ spamP(string) - spams contents in plain
 spamC(string) - spams contents in plain without spaces  
 clearchat - clears the current chat ;)  
 listargs - debug feature to test frick:tm: arg parser  
-thewalrus72 - accuses you of blasphemy
+thewalrus72 - accuses you of blasphemy  
 ????? - I just wanna tell you how I'm feeling  
 face (mention) - Sends user's profile picture  
 
