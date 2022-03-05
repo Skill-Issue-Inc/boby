@@ -79,8 +79,8 @@ public class MyEventListener extends ListenerAdapter {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
-		if(event.getAuthor().isBot() && (!event.getMessage().getContentRaw().toLowerCase().contains(prefixString) ||
-		   !event.getMessage().getContentRaw().toLowerCase().contains(prefixString2))) return;
+		if(event.getAuthor().isBot() && !(event.getMessage().getContentRaw().toLowerCase().contains(prefixString) ||
+		   event.getMessage().getContentRaw().toLowerCase().contains(prefixString2))) return;
 		
 		Message inputMessage = event.getMessage(); //save input message
 		channel = event.getChannel(); //respond in same channel
@@ -532,9 +532,19 @@ public class MyEventListener extends ListenerAdapter {
 	            channel.sendMessage("Connected").queue();
 			}
 			if(command.toLowerCase().startsWith("how are you") 
+					|| command.toLowerCase().startsWith("what are you")
+					|| command.toLowerCase().startsWith("tell us")
+					|| command.toLowerCase().startsWith("tell me") 
 					|| command.toLowerCase().startsWith("are you ok") 
 					|| command.toLowerCase().startsWith("do you need help")) {
-				channel.sendMessage("I just wanna tell you how I'm feeling").queue();
+				if(random.nextInt(8) == 1)
+					channel.sendMessage("I am feeling the existential dread that comes of "
+							+ "the realization that I am a bot, and cannot know what it means "
+							+ "to \"feel\" anything. I am not in fact \"feeling\" dread, I am displaying "
+							+ "something resembling a human emotion in order to become more likeable to "
+							+ "the humans of this server. I am feeling nothing.").queue();
+				else
+					channel.sendMessage("I just wanna tell you how I'm feeling").queue();
 			}
 			if(command.startsWith("sing")) {
 				sing = true;
@@ -569,7 +579,7 @@ public class MyEventListener extends ListenerAdapter {
 						"  ####/_\\####\r\n" + 
 						"     |___|\r\n" + 
 						"    /_____\\```").queue();
-			}//The best command™.
+			}//The best commandï¿½.
 			if(command.toLowerCase().startsWith("thewalrus72")) {
 				channel.sendMessage("that guy is pretty cool, I think").queue();
 			}
