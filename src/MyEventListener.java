@@ -573,6 +573,9 @@ public class MyEventListener extends ListenerAdapter {
 			if(command.toLowerCase().startsWith("thewalrus72")) {
 				channel.sendMessage("that guy is pretty cool, I think").queue();
 			}
+			if(command.startsWith("do the")) {
+				channel.sendMessage("I am actively leaking your IP address on Twitter").queue();
+			}
 			
 			
 			}//FUNNY HAHA MONEY CURRENCY MAX OWNED TM (R) INC. (c) TKOD DING DING DING DINM GISNG
