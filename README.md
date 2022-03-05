@@ -2,7 +2,7 @@
 Featurefull discord bot with things such as Funbucks™️, Lyric Continuation Complex, and Frick™️ Arg Parser.
 ## Commands
 #### PREFIX: "s!" and "boby "
-#### Command (required field) [optional field] {attachment}
+#### Key: Command (required field) [optional field] {attachment} - what it does  
 
 
 help - displays help message  
