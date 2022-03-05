@@ -1,7 +1,7 @@
 # Boby#8915
 Featurefull discord bot with things such as Funbucks™️, Lyric Continuation Complex, and Frick™️ Arg Parser.
 ## Commands
-#### PREFIX: "s!" and "boby "
+#### PREFIX: "s!" and "boby " for commands listed here
 #### Key: Command (required field) [optional field] {attachment} - what it does  
 
 
