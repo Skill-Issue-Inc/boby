@@ -107,56 +107,62 @@ public class MyEventListener extends ListenerAdapter {
 			
 			if(command.startsWith("help")) {
 				if(!command.startsWith("helpme")) {
-				channel.sendMessage("Version 2.4 full command list:\r\n" + 
-						"prefix: `s!` and `boby `\r\n" + 
-						"```\r\n" + 
-						"Command (required field) [optional field] {attachment}\r\n\n" +
-						"help - displays help message\r\n" + 
-						"ping - approx ping\r\n" + 
-						"say (string) - says the message\r\n" + 
-						"msg (mention) (string) - sends a DM from the bot to the user\r\n" + 
-						"msgid (UserID) (string) - sends a DM from the bot to the user\r\n" + 
-						"amsgid\r\n" + 
-						"motor [int] - Motor Image Repo\r\n" + 
-						"jojo [int] - Jojo Image Repo\r\n" + 
-						"img [int] - Public Image Repo\r\n" + 
-						"bazinga - acronym funny\r\n" + 
-						"addimg {image} - adds the attachment to s!img\r\n" + 
-						"makebot\r\n" + 
-						"die\r\n" + 
-						"dead\r\n" + 
-						"perished\r\n" + 
-						"crash\r\n" + 
-						"addjojo\r\n" + 
-						"killself - kills boby\r\n" + 
-						"tacoflip - heads or tails\r\n" + 
-						"no - yes\r\n" + 
-						"yes - no\r\n" + 
-						"thanks - gratuitous gratitude\r\n" + 
-						"helpme - boby totally wants to help ;)\r\n" + 
-						"spamE(string) - spams contents in formatting\r\n" + 
-						"spamP(string) - spams contents in plain\r\n" + 
-						"spamC(string) - spams contents in plain without spaces\r\n" + 
-						"clearchat - clears the current chat ;)\r\n" + 
-						"decide (string) [string]...repeat - randomly chooses\r\n" + 
-						"listargs - debug feature to test frick:tm: arg parser\r\n" + 
-						"E [int] - E image repo\r\n" + 
-						"addE {image} - Adds to E image repo\r\n" + 
-						"revive - revive a dead boby\r\n" + 
-						"amongus or amogus - Are you imposter? Find out with this horrible command!\r\n" +
-						"join - boby joins vc for no reason\r\n" +
-						"stop - boby leaves vc\r\n" +
-						"????? - I just wanna tell you how I'm feeling\r\n" + 
-						"face - Sends user's profile picture\r\n" + 
-						"```\r\n" + 
-						"Other Features:\r\n" + 
-						"```\r\n" + 
-						"-lyric continuation complex to it so that if you say any full lyric line in your sentence it will send the next one\r\n" + 
-						"-responds when boby is mentioned\r\n" + 
-						"-responds to \"boby should do\"\r\n" + 
-						"-add \"list\" to the end of image repos to see the contents\r\n" + 
-						"-for FUN(TM) commands, use s!funhelp or f!help\r\n" + 
-						"```").queue();
+					if(command.length() < 6)
+					{
+						channel.sendMessage("**help (category)** for additional help info\r\n" + 
+								"\r\n" + 
+								"`help main` - main bulk of random commands\r\n" + 
+								"`help images` - image repository commands\r\n" + 
+								"`help misc` - small/miscellaneous commands\r\n" + 
+								"\r\n" + 
+								"`boby help-music` or `m!help-music` - music playback via JMusicBot\r\n" + 
+								"`s!/boby funhelp` or `f!help`- Fun:tm: command information").queue();
+					} 
+					else
+					{
+						String categ = GetArgs(command).get(0);
+						System.out.println(categ);
+						if("main".contains(categ))
+							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**"
+									+ "help - displays help message\r\n" + 
+									"ping - approx ping\r\n" + 
+									"say (string) - says the message\r\n" + 
+									"msg (mention or UserID) (string) - sends a DM from the bot to the user\r\n" + 
+									"amsgid - (doesn't work)\r\n" + 
+									"bazinga - acronym funny\r\n" + 
+									"killself - kills boby\r\n" + 
+									"revive - revive a dead boby\r\n" + 
+									"tacoflip - heads or tails\r\n" + 
+									"amongus or amogus - Are you imposter? Find out with this horrible command!\r\n" + 
+									"decide (string) [string]...repeat - randomly chooses\r\n" + 
+									"spamE(string) - spams contents in formatting\r\n" + 
+									"spamP(string) - spams contents in plain\r\n" + 
+									"spamC(string) - spams contents in plain without spaces\r\n" + 
+									"clearchat - clears the current chat ;)\r\n" + 
+									"listargs - debug feature to test fricktm arg parser\r\n" + 
+									"face (mention) - Sends user's profile picture\r\n" + 
+									"????? - I just wanna tell you how I'm feeling").queue();
+						else if (categ.contains("image") || categ.contains("img")) 
+							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**"
+									+ "motor [int] - Motor Image Repo\r\n" + 
+									"jojo [int] - Jojo Image Repo\r\n" + 
+									"img [int] - Public Image Repo\r\n" + 
+									"E [int] - E image repo\r\n" + 
+									"addimg {image} - adds the attachment to s!img\r\n" + 
+									"addjojo {image} - (doesnt work) adds the attachment to s!jojo\r\n" + 
+									"addE {image} - Adds to E image repo").queue();
+						else if (categ.contains("misc")) 
+							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**"
+									+ "die\r\n" + 
+									"dead\r\n" + 
+									"perished\r\n" + 
+									"crash\r\n" + 
+									"thewalrus72\r\n" + 
+									"no - yes\r\n" + 
+									"yes - no\r\n" + 
+									"makebot - pings creator").queue();
+					}
+					
 				System.out.println("Helped out: " + event.getAuthor().getName());
 				}
 			}
@@ -472,6 +478,7 @@ public class MyEventListener extends ListenerAdapter {
 			if(command.startsWith("listargs")) {
 				for (String arg : GetArgs(command)) {
 					channel.sendMessage(arg).queue();
+					System.out.print(arg + "[" + GetArgs(command).indexOf(arg) + "]");
 				}
 			}
 			if(command.startsWith("should do")) {
@@ -963,6 +970,13 @@ public class MyEventListener extends ListenerAdapter {
 						}
 					}//(886795516984328223l).editMessageById(886795577097076746l, board).queue();
 					
+				}
+				else {
+					if(command.startsWith(pre + "help"))
+						channel.sendMessage("FUNBUCK:tm: UTILITY (c) 2021 \n"
+					+ "**type \"fun\" at the beginning of evey command** or use f! prefix \n"
+					+ "__You need to be in a Fun:tm: chanel to use Funbucks:tm:__ \n"
+					+ "Make sure \"funbucks\" is in the name").queue();
 				}
 			}
 			
