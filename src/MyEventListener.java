@@ -600,7 +600,60 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage("I am actively leaking your IP address on Twitter").queue();
 			}
 			
-			
+				if(command.startsWith("mock")) {
+					
+				String E = "";
+				User funguy;
+				List<Member> mentionsList = inputMessage.getMentionedMembers();
+				if(mentionsList.size() > 1) {
+					channel.sendMessage("crig only 1 mentn plz").queue();
+				}
+				if(mentionsList.size() < 1) {
+					funguy = event.getAuthor();
+				}
+				try {
+					funguy = mentionsList.get(0).getUser();
+				} catch (Exception e) {
+					channel.sendMessage("Error in getting mention").queue();
+					return;
+				}
+				switch (random.nextInt(8)) {
+					case 0:
+						E += "haha you suck";
+						break;
+					case 1:
+						E += "L + Ratio + Disrespect";
+						break;
+					case 2:
+						E += "loser";
+						break;
+					case 3:
+						E += "ur mom";
+						break;
+					case 4:
+						E += "absolute degenerate";
+						break;
+					case 5:
+						E += "nerd";
+						break;
+					case 6:
+						E += "ahahahaahhaha";
+						break;
+					case 7:
+						E += "the dirt beneath my feet";
+						break;
+					case 8:
+						E += "lol bad";
+						break;
+					case 9:
+						E += "true winner at losing";
+						break;
+					default:
+						break;
+				}
+				channel.sendMessage(E).queue();
+			}
+				
 			}//FUNNY HAHA MONEY CURRENCY MAX OWNED TM (R) INC. (c) TKOD DING DING DING DINM GISNG
 			if(command.startsWith("fun") || content.toLowerCase().startsWith(prefixString3)) { 
 				String pre = "fun";
