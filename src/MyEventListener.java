@@ -126,7 +126,7 @@ public class MyEventListener extends ListenerAdapter {
 						
 						System.out.println(categ);
 						if("main".contains(categ))
-							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**"
+							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**\n"
 									+ "help - displays help message\r\n" + 
 									"ping - approx ping\r\n" + 
 									"say (string) - says the message\r\n" + 
@@ -146,7 +146,7 @@ public class MyEventListener extends ListenerAdapter {
 									"face (mention) - Sends user's profile picture\r\n" + 
 									"????? - I just wanna tell you how I'm feeling").queue();
 						else if (categ.contains("image") || categ.contains("img")) 
-							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**"
+							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**\n"
 									+ "motor [int] - Motor Image Repo\r\n" + 
 									"jojo [int] - Jojo Image Repo\r\n" + 
 									"img [int] - Public Image Repo\r\n" + 
@@ -155,7 +155,7 @@ public class MyEventListener extends ListenerAdapter {
 									"addjojo {image} - (doesnt work) adds the attachment to s!jojo\r\n" + 
 									"addE {image} - Adds to E image repo").queue();
 						else if (categ.contains("misc")) 
-							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**"
+							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**\n"
 									+ "die\r\n" + 
 									"dead\r\n" + 
 									"perished\r\n" + 
