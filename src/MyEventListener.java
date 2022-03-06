@@ -120,7 +120,10 @@ public class MyEventListener extends ListenerAdapter {
 					} 
 					else
 					{
-						String categ = GetArgs(command).get(0);
+						try {
+							String categ = GetArgs(command).get(0);
+						
+						
 						System.out.println(categ);
 						if("main".contains(categ))
 							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**"
@@ -160,8 +163,11 @@ public class MyEventListener extends ListenerAdapter {
 									"thewalrus72\r\n" + 
 									"no - yes\r\n" + 
 									"yes - no\r\n" + 
-									"makebot - pings creator").queue();
+									"makebot - pings creator\r\n" +
+									"do the").queue();
+						} catch (Exception e) {}
 					}
+					
 					
 				System.out.println("Helped out: " + event.getAuthor().getName());
 				}
