@@ -39,8 +39,16 @@ public class FunProfile extends Object implements Serializable, Comparable<FunPr
 				return owner.getAsTag();
 			}
 		}
+		public String GetAddr() {
+			if(ExtNanoAddr == "N/A") {
+				return "internal-address";
+			}
+			else {
+				return ExtNanoAddr;
+			}
+		}
 		
-		public float funbucks = 25;
+		public float funbucks = 0;
 		public transient User owner;
 		public long ownerid;
 		String funname = "";
@@ -50,6 +58,8 @@ public class FunProfile extends Object implements Serializable, Comparable<FunPr
 		public int blanketedit = 0;
 		public boolean notif = true;
 		public boolean banned = false;
+		public String ExtNanoAddr = "N/A";
+		public boolean UseExt = false;
 		@Override
 		public int compareTo(FunProfile o) {
 			if(ownerid == 410529944624693279l)

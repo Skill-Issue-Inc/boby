@@ -17,19 +17,22 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.managers.AudioManager;
+//import net.dv8tion.jda.api.managers.AudioManager;
 import uk.oczadly.karl.jnano.util.workgen.*;
 
 public class MyEventListener extends ListenerAdapter {
-	public String prefixString = "s!";
+	public String prefixString  = "s!";
 	public String prefixString2 = "boby ";
 	public String prefixString3 = "f!";
+	public String prefixString4 = "n!";
 	public MessageChannel channel;
 	public List<FunProfile> lads = new ArrayList<FunProfile>();
+	public List<FunProfile> nanolads = new ArrayList<FunProfile>();
 	Random random = new Random();
 	public JDA api;
 	public int lyricline = 0;
 	public final String funName = System.getProperty("user.dir") + "/bot/" + "fun.ser";
+	public final String nanoName = System.getProperty("user.dir") + "/bot/" + "nano.ser";
 	public boolean sing;
 	WorkGenerator workGenerator = new CPUWorkGenerator(); // Note: construct once and re-use
 	
@@ -49,9 +52,19 @@ public class MyEventListener extends ListenerAdapter {
 			}
 	        ois.close();
 	        fis.close();
-	        System.out.println("Deserializationin Import Success");
+	        System.out.println("Fun Deserializationin Import Success");
 	        System.out.println(lads);
 	        
+	        FileInputStream fis2 = new FileInputStream(nanoName);
+			ObjectInputStream ois2 = new ObjectInputStream(fis2);
+	        nanolads = (List<FunProfile>)ois2.readObject();
+	        for (FunProfile funProfile : nanolads) {
+				funProfile.GetUser(api);
+			}
+	        ois2.close();
+	        fis2.close();
+	        System.out.println("Nano Deserializationin Import Success");
+	        System.out.println(nanolads);
 	        
 		}
 		catch (Exception e) {
@@ -78,7 +91,7 @@ public class MyEventListener extends ListenerAdapter {
 		    }
 		  };
 	
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
 		if(event.getAuthor().isBot() && !(event.getMessage().getContentRaw().toLowerCase().contains(prefixString) ||
@@ -92,7 +105,8 @@ public class MyEventListener extends ListenerAdapter {
 		try {
 		if(content.toLowerCase().startsWith(prefixString) 
 				|| content.toLowerCase().startsWith(prefixString2)
-				|| content.toLowerCase().startsWith(prefixString3)) {
+				|| content.toLowerCase().startsWith(prefixString3)
+				|| content.toLowerCase().startsWith(prefixString4)) {
 			String command = "";
 			if(content.toLowerCase().startsWith(prefixString)){
 				command = content.substring(prefixString.length());
@@ -105,7 +119,7 @@ public class MyEventListener extends ListenerAdapter {
 				//System.out.println("Prefix length: " + prefixString.length());	
 			}
 			
-			if(!command.startsWith(prefixString3)) {
+			if(!command.startsWith(prefixString3) && !command.startsWith(prefixString4)) {
 			
 			if(command.startsWith("help")) {
 				if(!command.startsWith("helpme")) {
@@ -202,7 +216,7 @@ public class MyEventListener extends ListenerAdapter {
 				System.out.println("arg1:" + arg1);
 				System.out.println("arg2:" + arg2);
 				String msg = command.substring(command.indexOf(">"));
-				List<Member> mentionsList = inputMessage.getMentionedMembers();
+				List<Member> mentionsList = inputMessage.getMentions().getMembers();
 				/*if(mentionsList.size() < 1) {
 					PrivateChannel pchannel = event.getGuild().getMemberById(Long.parseLong(arg2)).getUser()
 							.openPrivateChannel().complete();
@@ -507,7 +521,7 @@ public class MyEventListener extends ListenerAdapter {
 			}
 			if(command.startsWith("stop")) {
 				// Gets the channel in which the bot is currently connected.
-	            VoiceChannel connectedChannel = event.getGuild().getSelfMember().getVoiceState().getChannel();
+	            AudioChannel connectedChannel = event.getGuild().getSelfMember().getVoiceState().getChannel();
 	            // Checks if the bot is connected to a voice channel.
 	            if(connectedChannel == null) {
 	                // Get slightly fed up at the user.
@@ -519,13 +533,13 @@ public class MyEventListener extends ListenerAdapter {
 	            // Notify the user.
 	            channel.sendMessage("Disconnected").queue();
 			}
-			if(command.startsWith("join")) {
+			/*if(command.startsWith("join")) {
 	            // Checks if the bot has permissions.
-	            /*if(!event.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
+	            if(!event.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
 	                // The bot does not have permission to join any voice channel. Don't forget the .queue()!
 	                channel.sendMessage("I do not have permissions to join a voice channel!").queue();
 	                return;
-	            }*/
+	            }
 	            // Creates a variable equal to the channel that the user is in.
 	            VoiceChannel connectedChannel = event.getMember().getVoiceState().getChannel();
 	            // Checks if they are in a channel -- not being in a channel means that the variable = null.
@@ -545,7 +559,7 @@ public class MyEventListener extends ListenerAdapter {
 	            audioManager.openAudioConnection(connectedChannel);
 	            // Obviously people do not notice someone/something connecting.
 	            channel.sendMessage("Connected").queue();
-			}
+			}*/
 			if(command.toLowerCase().startsWith("how are you") 
 					|| command.toLowerCase().startsWith("what are you")
 					|| command.toLowerCase().startsWith("tell us")
@@ -566,7 +580,7 @@ public class MyEventListener extends ListenerAdapter {
 			}
 			if(command.startsWith("face")) {
 				User funguy;
-				List<Member> mentionsList = inputMessage.getMentionedMembers();
+				List<Member> mentionsList = inputMessage.getMentions().getMembers();
 				if(mentionsList.size() > 1) {
 					channel.sendMessage("crig only 1 mentn plz").queue();
 				}
@@ -604,7 +618,7 @@ public class MyEventListener extends ListenerAdapter {
 			if(command.startsWith("mock")) {
 			String E = "";
 			User funguy;
-			List<Member> mentionsList = inputMessage.getMentionedMembers();
+			List<Member> mentionsList = inputMessage.getMentions().getMembers();
 			if(mentionsList.size() > 1) {
 				channel.sendMessage("crig only 1 mentn plz").queue();
 			}
@@ -663,8 +677,149 @@ public class MyEventListener extends ListenerAdapter {
 			}
 			channel.sendMessage(E).queue();
 		}
+			
+			
 				
-			}//FUNNY HAHA MONEY CURRENCY MAX OWNED TM (R) INC. (c) TKOD DING DING DING DINM GISNG
+			}//NANO inbuilt currency manager
+			if(command.startsWith("nano") || content.toLowerCase().startsWith(prefixString4)) { 
+				String pre = "nano";
+				if(content.toLowerCase().startsWith(prefixString4)) {
+					command = content.substring(prefixString4.length());
+					pre = "";
+				}
+				
+				//RESTRICTED CHANNEL ONLY ON THIS CHANNEL TM TM (R) FUNBUCKS 2021
+				//if(event.getChannel().getName().contains("funbucks")) {
+					FunProfile funfrom = GetNanoProfile(event.getAuthor(), channel);
+					/*if(funfrom.banned) {
+						channel.sendMessage("You have been banned from using nano related commands. Sorry").queue();
+						return;
+					}*/
+					
+					
+					//nano utility help
+					if(command.startsWith(pre + "help"))
+						channel.sendMessage("NANO MANAGEMENT UTILITY (gpl) 2022 \n"
+					+ "**type \"nano\" at the beginning of evey command** or use n! prefix \n"
+					+ "help - displays this message\n"
+					+ "pay (mention) (amount) - Pays (mention) XNO in (amount) from _your internal funds_\n"
+					+ "pr{ofile} [mention] - Displays nano profile information\n"
+					+ "notif{ications} - Turns on/off ping notifications\n"
+					/*+ "> MAX ADMIN STUFFS:\n"
+					+ "fine (mention) (amount) - sucks (amount) funbucks from (mention) into the back void \n"
+					+ "grant (mention) (amount) - grants (amount) funbucks to (mention) from the eternal stash \n"
+					+ "ban (mention) - prevents (mention) from using any fun:tm: commands \n"
+					+ "pardon (mention) - un-bans (mention)\n"
+					+ "tax (amount) - deflates the entire economy over the starting funbucks\n"
+					+ "salary (amount) - inflates the entire economy\n"*/).queue();
+					
+					//pay command
+					if(command.startsWith(pre + "pay"))
+					{
+						List<Member> mentionsList = inputMessage.getMentions().getMembers();
+						FunProfile funto;
+						
+						try {
+							funto = GetNanoProfile(mentionsList.get(0).getUser(), channel);
+						} catch (Exception e) {
+							channel.sendMessage("Yo, who am I payin' here?").queue();
+							return;
+						}
+						
+						String arg2;
+						try {
+							arg2 = GetArgAt(command, 2);
+						} catch (Exception e) {
+							channel.sendMessage("Yo, how much am I payin' here?").queue();
+							return;
+						}
+						
+						float amount;
+						try {
+							amount = Float.parseFloat(arg2);
+						} catch (Exception e) {
+							channel.sendMessage("Yo, thats crig?").queue();
+							return;
+						}
+						if(amount < 0) {
+							channel.sendMessage("oi, you are the one payin' here. value below 0 not allowed").queue();
+							return;
+						}
+						if(amount > funfrom.funbucks) {
+							channel.sendMessage("oi, you dont have enough money").queue();
+							return;
+						}
+						funfrom.funbucks -= amount;
+						funfrom.outboundt++;
+						funto.funbucks += amount;
+						funto.inboundt++;
+						
+						channel.sendMessage("TRANSACTION OF **Ӿ" + amount 
+								+ "** FROM " + funfrom.GetName() 
+								+ " TO " + funto.GetName()).queue();
+					}
+					//nano profile information
+					if(command.startsWith(pre + "pr"))
+					{
+						List<Member> mentionsList = inputMessage.getMentions().getMembers();
+						if(mentionsList.size() > 1) {
+							channel.sendMessage("crig only 1 mentn plz").queue();
+						}
+						
+						FunProfile funguy;
+						try {
+							funguy = GetNanoProfile(mentionsList.get(0).getUser(), channel);
+						} catch (Exception e) {
+							funguy = GetNanoProfile(event.getAuthor(), channel);
+						}
+						
+						
+						channel.sendMessage("NANO UTILITY USER " + funguy.GetName() + "\n```\n"
+								+ "User internal nano: Ӿ" + funguy.funbucks + "\n"
+								+ "Total Outbound Transactions: " + funguy.outboundt + "\n"
+								+ "Total Inbound Transactions: " + funguy.inboundt + "\n"
+								+ "External nano address: " + funguy.GetAddr() + "\n"
+								+ "Use external address: " + funguy.UseExt + "\n"
+								//+ "Administrative Edits: " + funguy.adminedit + "\n"
+								//+ "Blanket Edits: " + funguy.blanketedit + "\n"
+								//+ "User Ban Status: " + funguy.banned + "\n"
+								+ "User Notification Status: " + funguy.notif + "\n"
+								+ "User Discord ID: " + funguy.owner.getId() + "\n"
+								+ "```").queue();
+					}
+					if(command.startsWith(pre + "notif"))
+					{
+						FunProfile funto = funfrom;
+						
+						funto.notif = !funto.notif;
+						
+						if(funto.notif)
+							channel.sendMessage("Ping notifications are now turned **on**").queue();
+						else
+							channel.sendMessage("Ping notifications are now turned **off**").queue();
+					}
+					
+					//SAVE DEM FUN(TM) DATABASE STUFFS
+					try {
+						for (FunProfile funProfile : nanolads) {
+							funProfile.SetUserID();
+						}
+					    FileOutputStream fos = new FileOutputStream(nanoName);
+					    ObjectOutputStream oos = new ObjectOutputStream(fos);
+					    oos.writeObject(nanolads);
+					    oos.flush();
+					    oos.close();
+					    System.out.println("Saved nano database state.");
+					} catch (Exception e) {
+						channel.sendMessage("WARNING: UNABLE TO SAVE TO NANO DATABASE!").queue();
+						e.printStackTrace();
+					}
+					
+					UpdateEconomy();
+				//}
+			}
+			
+			//FUNNY HAHA MONEY CURRENCY MAX OWNED TM (R) INC. (c) TKOD DING DING DING DINM GISNG
 			if(command.startsWith("fun") || content.toLowerCase().startsWith(prefixString3)) { 
 				String pre = "fun";
 				if(content.toLowerCase().startsWith(prefixString3)) {
@@ -700,7 +855,7 @@ public class MyEventListener extends ListenerAdapter {
 					//pAY THE MANS THE MONEYZ (c) (R) (k)
 					if(command.startsWith(pre + "pay"))
 					{
-						List<Member> mentionsList = inputMessage.getMentionedMembers();
+						List<Member> mentionsList = inputMessage.getMentions().getMembers();
 						FunProfile funto;
 						
 						try {
@@ -745,7 +900,7 @@ public class MyEventListener extends ListenerAdapter {
 					//Sow off dat profil
 					if(command.startsWith(pre + "pr"))
 					{
-						List<Member> mentionsList = inputMessage.getMentionedMembers();
+						List<Member> mentionsList = inputMessage.getMentions().getMembers();
 						if(mentionsList.size() > 1) {
 							channel.sendMessage("crig only 1 mentn plz").queue();
 						}
@@ -795,7 +950,7 @@ public class MyEventListener extends ListenerAdapter {
 						
 						if(command.startsWith(pre + "fine"))
 						{
-							List<Member> mentionsList = inputMessage.getMentionedMembers();
+							List<Member> mentionsList = inputMessage.getMentions().getMembers();
 							
 							FunProfile funto;
 							try {
@@ -836,7 +991,7 @@ public class MyEventListener extends ListenerAdapter {
 						
 						if(command.startsWith(pre + "grant"))
 						{
-							List<Member> mentionsList = inputMessage.getMentionedMembers();
+							List<Member> mentionsList = inputMessage.getMentions().getMembers();
 							
 							FunProfile funto;
 							try {
@@ -874,7 +1029,7 @@ public class MyEventListener extends ListenerAdapter {
 						
 						if(command.startsWith(pre + "ban"))
 						{
-							List<Member> mentionsList = inputMessage.getMentionedMembers();
+							List<Member> mentionsList = inputMessage.getMentions().getMembers();
 							
 							FunProfile funto;
 							try {
@@ -894,7 +1049,7 @@ public class MyEventListener extends ListenerAdapter {
 						
 						if(command.startsWith(pre + "pardon"))
 						{
-							List<Member> mentionsList = inputMessage.getMentionedMembers();
+							List<Member> mentionsList = inputMessage.getMentions().getMembers();
 							
 							FunProfile funto;
 							try {
@@ -993,51 +1148,7 @@ public class MyEventListener extends ListenerAdapter {
 						e.printStackTrace();
 					}
 					
-					
-					//EDIT THE EPIC FUN ECONOMY (R) LEADERBOARD OF FUN (TM)
-					for (Guild guild : api.getGuilds()) {
-						//System.out.println("Getting Guilds");
-						for (TextChannel channel : guild.getTextChannels()) {
-							//System.out.println("Getting Channels");
-							//System.out.println(channel.getName());
-							if(channel.getName().contains("fun-economy")) {
-								System.out.println("Found #fun-economy in " + guild.getName());
-								
-								((MessageChannel) channel).getHistory().retrievePast(1).queue(messages -> {
-									String board = "Current registered members of the Fun:tm: economy:\n";
-									Collections.sort(lads);
-									for (FunProfile funProfile : lads) {
-										if(funProfile.owner.getIdLong() == 410529944624693279l)
-										{
-											board += "$" + "∞" + " <:funbuckplus:886723353199656960> " 
-													+ funProfile.owner.getAsMention() + " \"I own the economy\" \n";
-										}
-										else if(funProfile.banned)
-										{
-											board += "$" + funProfile.funbucks + " <:funbuckplus:886723353199656960> " 
-													+ funProfile.owner.getAsMention() + " (banned) \n";
-										}
-										else
-											board += "$" + funProfile.funbucks + " <:funbuckplus:886723353199656960> " 
-													+ funProfile.owner.getAsMention() + "\n";
-									}
-									
-								    // messages (list) contains all received messages
-								    // Access them in here
-								    // Use for example messages.get(0) to get the received message
-								    // (messages is of type List)
-									if(messages.size() == 0) {
-										System.out.println("not found message");
-										channel.sendMessage(board).queue();
-									}
-									else {
-										System.out.println("found message");
-										messages.get(0).editMessage(board).queue();
-									}
-								});
-							}
-						}
-					}//(886795516984328223l).editMessageById(886795577097076746l, board).queue();
+					UpdateEconomy();
 					
 				}
 				else {
@@ -1050,7 +1161,7 @@ public class MyEventListener extends ListenerAdapter {
 			}
 			
 			
-
+			
 		}
 		if((!content.toLowerCase().startsWith(prefixString) 
 				&& !content.toLowerCase().startsWith(prefixString2))
@@ -1140,6 +1251,53 @@ public class MyEventListener extends ListenerAdapter {
 		}
 	}
 	
+	private void UpdateEconomy() {
+		//EDIT THE EPIC FUN ECONOMY (R) LEADERBOARD OF FUN (TM)
+		for (Guild guild : api.getGuilds()) {
+			//System.out.println("Getting Guilds");
+			for (TextChannel channel : guild.getTextChannels()) {
+				//System.out.println("Getting Channels");
+				//System.out.println(channel.getName());
+				if(channel.getName().contains("fun-economy")) {
+					System.out.println("Found #fun-economy in " + guild.getName());
+					
+					((MessageChannel) channel).getHistory().retrievePast(1).queue(messages -> {
+						String board = "Current registered members of the Fun:tm: economy:\n";
+						Collections.sort(lads);
+						for (FunProfile funProfile : lads) {
+							if(funProfile.owner.getIdLong() == 410529944624693279l)
+							{
+								board += "$" + "∞" + " <:funbuckplus:886723353199656960> " 
+										+ funProfile.owner.getAsMention() + " \"I own the economy\" \n";
+							}
+							else if(funProfile.banned)
+							{
+								board += "$" + funProfile.funbucks + " <:funbuckplus:886723353199656960> " 
+										+ funProfile.owner.getAsMention() + " (banned) \n";
+							}
+							else
+								board += "$" + funProfile.funbucks + " <:funbuckplus:886723353199656960> " 
+										+ funProfile.owner.getAsMention() + "\n";
+						}
+						
+					    // messages (list) contains all received messages
+					    // Access them in here
+					    // Use for example messages.get(0) to get the received message
+					    // (messages is of type List)
+						if(messages.size() == 0) {
+							System.out.println("not found message");
+							channel.sendMessage(board).queue();
+						}
+						else {
+							System.out.println("found message");
+							messages.get(0).editMessage(board).queue();
+						}
+					});
+				}
+			}
+		}//(886795516984328223l).editMessageById(886795577097076746l, board).queue();
+	}
+	
 	private FunProfile GetProfile(User user, MessageChannel channel) {
 		for (FunProfile funProfile : lads) {
 			if(funProfile.owner.getIdLong() == user.getIdLong())
@@ -1153,6 +1311,19 @@ public class MyEventListener extends ListenerAdapter {
 		return newprofile;
 	}
 	
+	private FunProfile GetNanoProfile(User user, MessageChannel channel) {
+		for (FunProfile funProfile : nanolads) {//e
+			if(funProfile.owner.getIdLong() == user.getIdLong())
+				return funProfile;
+		}
+		channel.sendMessage("Adding new user " + user.getAsMention()).queue();
+		FunProfile newprofile = new FunProfile();
+		newprofile.owner = user;//.getIdLong();
+		newprofile.funbucks = 0;
+		nanolads.add(newprofile);//e
+		return newprofile;
+	}
+	
 	private String RemovePunct(String input) {
 		/*if(input.contains("(")) {
 			input = input.substring(0, input.indexOf('('));
@@ -1161,6 +1332,7 @@ public class MyEventListener extends ListenerAdapter {
 				.replace("?", "").replace(",", "").replace("\"", "");
 	}
 	
+	@SuppressWarnings("deprecation")
 	private String DownloadFile(Attachment attachment, String dir) {
 		String dirString = (System.getProperty("user.dir") + "/bot/" + dir + "/");
 		File toDownload = new File(dirString + attachment.getFileName());
