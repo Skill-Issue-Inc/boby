@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
+import uk.oczadly.karl.jnano.util.workgen.*;
 
 public class MyEventListener extends ListenerAdapter {
 	public String prefixString = "s!";
@@ -30,6 +31,7 @@ public class MyEventListener extends ListenerAdapter {
 	public int lyricline = 0;
 	public final String funName = System.getProperty("user.dir") + "/bot/" + "fun.ser";
 	public boolean sing;
+	WorkGenerator workGenerator = new CPUWorkGenerator(); // Note: construct once and re-use
 	
 	@SuppressWarnings("unchecked")
 	MyEventListener(JDA jda){

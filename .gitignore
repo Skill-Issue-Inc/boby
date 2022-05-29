@@ -4,3 +4,4 @@
 bin/
 bot/img/*
 bot/token.txt
+/target/
