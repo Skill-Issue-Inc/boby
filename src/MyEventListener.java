@@ -1355,6 +1355,7 @@ public class MyEventListener extends ListenerAdapter {
 				Thread.sleep(8*1000);
 				inputMessage.removeReaction("U+2705").queue();
 			}
+			DeleteFiles("autocrop");
 		}
 		
 		super.onMessageReceived(event);
@@ -1382,7 +1383,6 @@ public class MyEventListener extends ListenerAdapter {
 		channel.sendMessage("converting").queue();
 		
 		ProcessBuilder pb = new ProcessBuilder("sh", "autocrop.sh", "autocrop/" + filename);
-		pb.inheritIO();
 		pb.directory(new File(System.getProperty("user.dir") + "/bot/"));
 		pb.start().waitFor();
 		
@@ -1393,6 +1393,8 @@ public class MyEventListener extends ListenerAdapter {
 		FileReturn ret = new FileReturn();
 		ret.file = new File(MotorDir, newfilename);
 		channel.sendMessage(newfilename).addFile(ret.file).queue();
+		
+		DeleteFiles("autocrop");
 	}
 	
 	private void UpdateEconomy() {
@@ -1511,6 +1513,16 @@ public class MyEventListener extends ListenerAdapter {
 		File file;
 		int index;
 		int length;
+	}
+	
+	private void DeleteFiles(String dir)
+	{
+		File filesList[] = new File(System.getProperty("user.dir") + "/bot/" + dir).listFiles();
+		for(File file : filesList) {
+			if(file.isFile()) {
+				file.delete();
+			}
+		}
 	}
 	
 	private FileReturn getFileFromDir(String dirname, String command) {
