@@ -1,15 +1,23 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -17,7 +25,9 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-//import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.internal.requests.Route.Emotes;
+import uk.oczadly.karl.jnano.rpc.*;
+import uk.oczadly.karl.jnano.rpc.util.RpcServiceProviders;
 import uk.oczadly.karl.jnano.util.workgen.*;
 
 public class MyEventListener extends ListenerAdapter {
@@ -35,6 +45,7 @@ public class MyEventListener extends ListenerAdapter {
 	public final String nanoName = System.getProperty("user.dir") + "/bot/" + "nano.ser";
 	public boolean sing;
 	WorkGenerator workGenerator = new CPUWorkGenerator(); // Note: construct once and re-use
+	RpcQueryNode rpc = RpcServiceProviders.nanex();
 	
 	@SuppressWarnings("unchecked")
 	MyEventListener(JDA jda){
@@ -677,9 +688,68 @@ public class MyEventListener extends ListenerAdapter {
 			}
 			channel.sendMessage(E).queue();
 		}
-			
-			
-				
+		if(command.startsWith("autocrop")) {
+			AutoCropVideo(inputMessage);
+			return;
+		}	
+		if(command.startsWith("ratio")) {
+		}	
+		if(command.startsWith("ambient")) {
+			List<String> exclude = ReadTextFile("exclude.txt");
+			for (String string : exclude) {
+				if(string.contains(event.getGuild().getId())) {
+					/*StringBuilder sb = new StringBuilder();
+				    Files.lines(Paths.get("bot/exclude.txt")).forEach(sb::append);
+				    
+			    	String file = sb.toString();
+			    	String[] arr = file.split("\n"); // every arr items is a line now.
+			    	sb = new StringBuilder();
+			    	for(String s : arr)
+			    	{
+			    	   if(s.contains(event.getGuild().getId()))
+			    	   continue;
+			    	   sb.append(s); //If you want to split with new lines you can use sb.append(s + "\n");
+			    	}
+			    	
+		            PrintWriter pw = new PrintWriter("bot/exclude.txt");
+		            pw.print(sb.toString());
+		            pw.close();*/
+					
+					File inputFile = new File("bot/exclude.txt");
+			        File tempFile = new File("bot/tmpexclude.txt");
+
+			        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+			        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+			        String lineToRemove = event.getGuild().getId();
+			        String currentLine;
+
+			        while((currentLine = reader.readLine()) != null) {
+			            // trim newline when comparing with lineToRemove
+			            String trimmedLine = currentLine.trim();
+			            if(trimmedLine.equals(lineToRemove)) continue;
+			            writer.write(currentLine + System.getProperty("line.separator"));
+			        }
+			        writer.close(); 
+			        reader.close(); 
+			        boolean successful = tempFile.renameTo(inputFile);
+			        if (!successful)
+			        	channel.sendMessage("error toggling on").queue();
+			        else
+			        	channel.sendMessage("Toggled ambient messages **on**").queue();
+					return;
+				}
+			}
+			FileWriter fStream = new FileWriter("bot/exclude.txt", true);
+			fStream.append(event.getGuild().getId() + "\n");
+			fStream.flush();
+			fStream.close();
+			channel.sendMessage("Toggled ambient messages **off**").queue();
+		}
+		
+		
+		
+		
 			}//NANO inbuilt currency manager
 			if(command.startsWith("nano") || content.toLowerCase().startsWith(prefixString4)) { 
 				String pre = "nano";
@@ -1172,7 +1242,7 @@ public class MyEventListener extends ListenerAdapter {
 			
 			List<String> exclude = ReadTextFile("exclude.txt");
 			for (String string : exclude) {
-				if(event.getGuild().getId().contains(string))
+				if(string.contains(event.getGuild().getId()))
 					return;
 			}
 			
@@ -1244,11 +1314,85 @@ public class MyEventListener extends ListenerAdapter {
 			}
 		}
 		
+		//video autocroppper
+		Attachment attachment = null;
+		try {
+			attachment = inputMessage.getAttachments().get(0);
+		} catch (Exception e) {	} //no attachment
+		if(attachment != null && attachment.isVideo())
+		{
+			inputMessage.addReaction("U+2699").queue();
+			
+			String filename = (DownloadFile(attachment, "autocrop"));
+			
+			ProcessBuilder pb = new ProcessBuilder("sh", "cropdetect.sh", "autocrop/" + filename);
+			pb.directory(new File(System.getProperty("user.dir") + "/bot/"));
+			Process p = pb.start(); 
+            
+            // Read and print the standard output stream of the process 
+			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String line;
+			StringBuilder sb = new StringBuilder();
+			p.waitFor();
+			while((line=br.readLine())!=null) sb.append(line);
+			String crop = sb.toString();
+			System.out.println(crop);
+			int x = Integer.parseInt(crop.substring(0, crop.indexOf(':')));
+			int y = Integer.parseInt(crop.substring(crop.indexOf(':') + 1));
+			inputMessage.removeReaction("U+2699").queue();
+			if (x > 0 || y > 0){
+				inputMessage.addReaction("U+26A0").queue();
+				channel.sendMessage(
+"\u26A0 Cringe Detected!\n "
++ "Your video has black bars in it that can be autocropped out. "
++ "I shall do it for you since you didn't put it in an autocropper "
++ "(can be manually called from s!autocrop) or I could be dumb bot :P \n\n"
++ "-- AUTOCROP (" + crop + ") BEGIN --").queue();
+				AutoCropVideo(inputMessage);
+			}
+			else {
+				inputMessage.addReaction("U+2705").queue();
+				Thread.sleep(8*1000);
+				inputMessage.removeReaction("U+2705").queue();
+			}
+		}
+		
 		super.onMessageReceived(event);
 		}catch (Exception e) {
 			channel.sendMessage("Sorry, my brain is spaghetti code :( \nError in command: " + e.toString()).queue();
 			e.printStackTrace();
 		}
+	}
+	
+	private void AutoCropVideo(Message inputMessage) throws InterruptedException, IOException {
+		String filename = "NotDownloaded";
+		try {
+			Attachment attachment = inputMessage.getAttachments().get(0);
+			if(attachment.isVideo()) {
+				filename = (DownloadFile(attachment, "autocrop"));
+			} else {
+				channel.sendMessage("Attachment is not a video").queue();
+				return;
+			}
+		} catch (Exception e) {
+			channel.sendMessage("No attachment").queue();
+			return;
+		}
+		
+		channel.sendMessage("converting").queue();
+		
+		ProcessBuilder pb = new ProcessBuilder("sh", "autocrop.sh", "autocrop/" + filename);
+		pb.inheritIO();
+		pb.directory(new File(System.getProperty("user.dir") + "/bot/"));
+		pb.start().waitFor();
+		
+		channel.sendMessage("uploading").queue();
+		int dotindex = filename.lastIndexOf('.');
+		String newfilename = filename.substring(0, dotindex) + "_autocrop" + filename.substring(dotindex);
+		File MotorDir = new File(System.getProperty("user.dir") + "/bot/autocrop/");
+		FileReturn ret = new FileReturn();
+		ret.file = new File(MotorDir, newfilename);
+		channel.sendMessage(newfilename).addFile(ret.file).queue();
 	}
 	
 	private void UpdateEconomy() {
@@ -1343,7 +1487,7 @@ public class MyEventListener extends ListenerAdapter {
 							+ "0." + attachment.getFileExtension());
 		}
 		System.out.println(dirString + toDownload.getName());
-		attachment.downloadToFile(toDownload);
+		attachment.downloadToFile(toDownload).join();
 		return toDownload.getName();
 	}
 	
