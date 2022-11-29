@@ -8,16 +8,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.CompletableFuture;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -25,7 +21,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.internal.requests.Route.Emotes;
 import uk.oczadly.karl.jnano.rpc.*;
 import uk.oczadly.karl.jnano.rpc.util.RpcServiceProviders;
 import uk.oczadly.karl.jnano.util.workgen.*;
@@ -170,7 +165,10 @@ public class MyEventListener extends ListenerAdapter {
 									"spamC(string) - spams contents in plain without spaces\r\n" + 
 									"clearchat - clears the current chat ;)\r\n" + 
 									"listargs - debug feature to test fricktm arg parser\r\n" + 
-									"face (mention) - Sends user's profile picture\r\n" + 
+									"face (mention) - Sends user's profile picture\r\n" +
+									"ratio (mention) - ratios them\r\n" + 
+									"autocrop {video} - tries to automatically detect black bars and crop\r\n" + 
+									"ambient - toggles on or off ambient interactions from Boby\r\n" + 
 									"????? - I just wanna tell you how I'm feeling").queue();
 						else if (categ.contains("image") || categ.contains("img")) 
 							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**\n"
@@ -693,6 +691,19 @@ public class MyEventListener extends ListenerAdapter {
 			return;
 		}	
 		if(command.startsWith("ratio")) {
+			List<Member> mentionsList = inputMessage.getMentions().getMembers();
+			if(mentionsList.size() > 1) {
+				channel.sendMessage("I can only ratio one person at a time").queue();
+				return;
+			}
+			else if (mentionsList.size() < 1) {
+				channel.sendMessage("please tell me who to ratio").queue();
+				return;
+			}
+			inputMessage.addReaction("U+267B").queue();
+			inputMessage.addReaction("U+2764").queue();
+			inputMessage.addReaction("U+1F4AC").queue();
+			channel.sendMessage(mentionsList.get(0).getAsMention() + " has been ratio’d!").queue();
 		}	
 		if(command.startsWith("ambient")) {
 			List<String> exclude = ReadTextFile("exclude.txt");
@@ -1337,10 +1348,12 @@ public class MyEventListener extends ListenerAdapter {
 			while((line=br.readLine())!=null) sb.append(line);
 			String crop = sb.toString();
 			System.out.println(crop);
+			
 			int x = Integer.parseInt(crop.substring(0, crop.indexOf(':')));
 			int y = Integer.parseInt(crop.substring(crop.indexOf(':') + 1));
+			
 			inputMessage.removeReaction("U+2699").queue();
-			if (x > 0 || y > 0){
+			if (x > 10 || y > 10){
 				inputMessage.addReaction("U+26A0").queue();
 				channel.sendMessage(
 "\u26A0 Cringe Detected!\n "
@@ -1354,8 +1367,9 @@ public class MyEventListener extends ListenerAdapter {
 				inputMessage.addReaction("U+2705").queue();
 				Thread.sleep(8*1000);
 				inputMessage.removeReaction("U+2705").queue();
+				DeleteFiles("autocrop");
 			}
-			DeleteFiles("autocrop");
+			
 		}
 		
 		super.onMessageReceived(event);
