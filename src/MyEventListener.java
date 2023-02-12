@@ -17,6 +17,7 @@ import java.util.Scanner;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -24,20 +25,24 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import uk.oczadly.karl.jnano.rpc.*;
 import uk.oczadly.karl.jnano.rpc.util.RpcServiceProviders;
 import uk.oczadly.karl.jnano.util.workgen.*;
+import net.objecthunter.exp4j.*;
 
 public class MyEventListener extends ListenerAdapter {
 	public String prefixString  = "s!";
 	public String prefixString2 = "boby ";
 	public String prefixString3 = "f!";
 	public String prefixString4 = "n!";
+	public String prefixString5 = "a!";
 	public MessageChannel channel;
 	public List<FunProfile> lads = new ArrayList<FunProfile>();
 	public List<FunProfile> nanolads = new ArrayList<FunProfile>();
+	public List<ServerSettings> serverSettingss = new ArrayList<ServerSettings>();
 	Random random = new Random();
 	public JDA api;
 	public int lyricline = 0;
 	public final String funName = System.getProperty("user.dir") + "/bot/" + "fun.ser";
 	public final String nanoName = System.getProperty("user.dir") + "/bot/" + "nano.ser";
+	public final String ssettingsName = System.getProperty("user.dir") + "/bot/" + "ssettings.ser";
 	public boolean sing;
 	WorkGenerator workGenerator = new CPUWorkGenerator(); // Note: construct once and re-use
 	RpcQueryNode rpc = RpcServiceProviders.nanex();
@@ -72,6 +77,13 @@ public class MyEventListener extends ListenerAdapter {
 	        System.out.println("Nano Deserializationin Import Success");
 	        System.out.println(nanolads);
 	        
+	        FileInputStream fis3 = new FileInputStream(ssettingsName);
+			ObjectInputStream ois3 = new ObjectInputStream(fis3);
+			serverSettingss = (List<ServerSettings>)ois3.readObject();
+	        ois3.close();
+	        fis3.close();
+	        System.out.println("Server Settings Deserializationin Import Success");
+	        System.out.println(serverSettingss);
 		}
 		catch (Exception e) {
 			System.out.println("Error in Deserializationin");
@@ -112,7 +124,8 @@ public class MyEventListener extends ListenerAdapter {
 		if(content.toLowerCase().startsWith(prefixString) 
 				|| content.toLowerCase().startsWith(prefixString2)
 				|| content.toLowerCase().startsWith(prefixString3)
-				|| content.toLowerCase().startsWith(prefixString4)) {
+				|| content.toLowerCase().startsWith(prefixString4)
+				|| content.toLowerCase().startsWith(prefixString5)) {
 			String command = "";
 			if(content.toLowerCase().startsWith(prefixString)){
 				command = content.substring(prefixString.length());
@@ -125,7 +138,7 @@ public class MyEventListener extends ListenerAdapter {
 				//System.out.println("Prefix length: " + prefixString.length());	
 			}
 			
-			if(!command.startsWith(prefixString3) && !command.startsWith(prefixString4)) {
+			if(!command.startsWith(prefixString3) && !command.startsWith(prefixString4) && !command.startsWith(prefixString5)) {
 			
 			if(command.startsWith("help")) {
 				if(!command.startsWith("helpme")) {
@@ -709,22 +722,6 @@ public class MyEventListener extends ListenerAdapter {
 			List<String> exclude = ReadTextFile("exclude.txt");
 			for (String string : exclude) {
 				if(string.contains(event.getGuild().getId())) {
-					/*StringBuilder sb = new StringBuilder();
-				    Files.lines(Paths.get("bot/exclude.txt")).forEach(sb::append);
-				    
-			    	String file = sb.toString();
-			    	String[] arr = file.split("\n"); // every arr items is a line now.
-			    	sb = new StringBuilder();
-			    	for(String s : arr)
-			    	{
-			    	   if(s.contains(event.getGuild().getId()))
-			    	   continue;
-			    	   sb.append(s); //If you want to split with new lines you can use sb.append(s + "\n");
-			    	}
-			    	
-		            PrintWriter pw = new PrintWriter("bot/exclude.txt");
-		            pw.print(sb.toString());
-		            pw.close();*/
 					
 					File inputFile = new File("bot/exclude.txt");
 			        File tempFile = new File("bot/tmpexclude.txt");
@@ -757,11 +754,158 @@ public class MyEventListener extends ListenerAdapter {
 			fStream.close();
 			channel.sendMessage("Toggled ambient messages **off**").queue();
 		}
+		if(command.startsWith("restart")) {
+			String l = command.substring(7);
+			if(!(new File(System.getProperty("user.dir") + "/bot/restartaaa.sh").exists())) {
+				channel.sendMessage("There is no server restart script for \"" + l + "\" which likely means it's not implemented.").queue();
+			}
+			
+			ProcessBuilder pb = new ProcessBuilder("sh", "restart" + l + ".sh");
+			pb.directory(new File(System.getProperty("user.dir") + "/bot/"));
+			pb.start();
+		}	
+		if(command.startsWith("you're not real") || command.startsWith("youre not real") || 
+				command.startsWith("your not real") || command.startsWith("isnt real") || command.startsWith("isn't real") ) {
+			channel.sendMessage("https://cdn.discordapp.com/emojis/836400200024195103.gif").queue();
+		}
+		if(command.startsWith("calc")) {
+			String inputString = command.substring(command.indexOf(' '));
+			String convertedString = inputString;
+			convertedString = convertedString.replace("plus", "+");
+			convertedString = convertedString.replace("minus", "-");
+			convertedString = convertedString.replace("times", "*");
+			convertedString = convertedString.replace("divided by", "/");
+			convertedString = convertedString.replace("devided by", "/");
+			convertedString = convertedString.replace("zero", "0");
+			convertedString = convertedString.replace("one", "1");
+			convertedString = convertedString.replace("two", "2");
+			convertedString = convertedString.replace("three", "3");
+			convertedString = convertedString.replace("four", "4");
+			convertedString = convertedString.replace("five", "5");
+			convertedString = convertedString.replace("six", "6");
+			convertedString = convertedString.replace("seven", "7");
+			convertedString = convertedString.replace("eight", "8");
+			convertedString = convertedString.replace("nine", "9");
+			convertedString = convertedString.replace("ten", "10");
+			if(!convertedString.contains(inputString))
+				channel.sendMessage("Interpreted as: " + convertedString).queue();
+			
+			Expression calc = new ExpressionBuilder(convertedString).build();
+			channel.sendMessage("The answer is " + calc.evaluate()).queue();
+		}
+		if("t".contains(command) && command != "") {
+			channel.sendMessage(""
++ "早上好中国 现在我有冰淇淋 我很喜欢冰淇淋 但是 速度与激情9 比冰淇淋 速度与激情 速度与激情9 我最喜欢 所以…现在是音乐时间 准备 1 "
++ "2 3 两个礼拜以后 速度与激情9 ×3 不要忘记 不要错过 记得去电影院看速度与激情9 因为非常好电影 动作非常好 差不多一样冰淇淋 再见\r\n\r\n"
+					+ "中共万岁").queue();
+		}
+		if(command.startsWith("get")) {
+			String tag = GetArgAt(command, 1);
+			Guild thisGuild = event.getGuild();
+			ServerSettings thisServerSettings = GetServerProfile((int)thisGuild.getIdLong(), channel);
+			long roleID = thisServerSettings.getRoleIDFromTag(tag);
+			if(roleID == -1)
+			{
+				channel.sendMessage("tag doesn't link to a role").queue();
+				return;
+			}
+			
+			if(thisGuild.getMember(event.getAuthor()).getRoles().contains(thisGuild.getRoleById(roleID))) {
+				channel.sendMessage("Role already assigned").queue();
+				return;
+			}
+			thisGuild.addRoleToMember(event.getAuthor(), thisGuild.getRoleById(roleID)).queue();
+			channel.sendMessage("Role added").queue();	
+		}
 		
 		
 		
-		
-			}//NANO inbuilt currency manager
+			}/* =========================== if statements go above this line =========================== */
+			if(command.startsWith("admin ") || content.toLowerCase().startsWith(prefixString5)) {
+				if(content.toLowerCase().startsWith(prefixString)) 
+					return;
+				if(content.toLowerCase().startsWith(prefixString5)) {
+					command = content.substring(prefixString5.length());
+				}
+				if(!event.getGuild().getMember(event.getAuthor()).getPermissions().contains(Permission.MANAGE_SERVER)) {
+					channel.sendMessage("you're not real").queue();
+					return;
+				}
+				ServerSettings thisServerSettings = GetServerProfile((int)event.getGuild().getIdLong(), channel);
+				
+				if(command.startsWith("help"))
+					channel.sendMessage("Server Management Settings (GPL) 2023 \nYour guild ID is " + event.getGuild().getId()).queue();
+				
+				if(command.startsWith("setrole")) {
+					List<Role> mentionsList = inputMessage.getMentions().getRoles();
+					if(mentionsList.size() > 1) {
+						channel.sendMessage("I can only set one role at a time").queue();
+						return;
+					}
+					else if (mentionsList.size() < 1) {
+						channel.sendMessage("please @ the role").queue();
+						return;
+					}
+					String tag = "";
+					try {
+						tag = GetArgAt(command, 2);
+					} catch (Exception e) {}
+					
+					if(tag == "") {
+						channel.sendMessage("what tag do I set for " + mentionsList.get(0).getAsMention() + "?"
+								+ "\nplease provide a tag (phrase used in the s!get command)").queue();
+						return;
+					}
+					
+					if(thisServerSettings.CreateRolepair(mentionsList.get(0).getIdLong(), tag))
+						channel.sendMessage(mentionsList.get(0).getAsMention() + " self-assignment tag is already set to " + tag).queue();
+					else
+						channel.sendMessage(mentionsList.get(0).getAsMention() + " self-assignment tag has been set to " + tag).queue();
+				}
+				if(command.startsWith("delrole") || command.startsWith("deleterole")) {
+					List<Role> mentionsList = inputMessage.getMentions().getRoles();
+					if(mentionsList.size() > 1) {
+						channel.sendMessage("I can delete one role at a time").queue();
+						return;
+					}
+					else if (mentionsList.size() < 1) {
+						channel.sendMessage("please @ the role").queue();
+						return;
+					}
+					
+					if(thisServerSettings.DeleteRolepairs(mentionsList.get(0).getIdLong()))
+						channel.sendMessage("All tags for the role have been deleted").queue();
+					else 
+						channel.sendMessage("bruh (none left)").queue();
+					
+				}
+				if(command.startsWith("deltag") || command.startsWith("deletetag")) {
+					
+				}
+				if(command.startsWith("printroles")) {
+					channel.sendMessage(thisServerSettings.debugfrick()).queue();
+				}
+				
+				//save database or somethin
+				try {
+					/*for (ServerSettings settings : serverSettingss) {
+						funProfile.SetUserID();
+					}*/
+				    FileOutputStream fos = new FileOutputStream(ssettingsName);
+				    ObjectOutputStream oos = new ObjectOutputStream(fos);
+				    oos.writeObject(serverSettingss);
+				    oos.flush();
+				    oos.close();
+				    System.out.println("Saved server settings state.");
+				} catch (Exception e) {
+					channel.sendMessage("WARNING: UNABLE TO SAVE SERVER SETTINGS!").queue();
+					e.printStackTrace();
+				}
+			}	
+			
+			
+			
+			//NANO inbuilt currency manager
 			if(command.startsWith("nano") || content.toLowerCase().startsWith(prefixString4)) { 
 				String pre = "nano";
 				if(content.toLowerCase().startsWith(prefixString4)) {
@@ -1481,6 +1625,17 @@ public class MyEventListener extends ListenerAdapter {
 		newprofile.owner = user;//.getIdLong();
 		newprofile.funbucks = 0;
 		nanolads.add(newprofile);//e
+		return newprofile;
+	}
+	
+	private ServerSettings GetServerProfile(int GuildID, MessageChannel channel) {
+		for (ServerSettings serverSettings : serverSettingss) {
+			if(serverSettings.ID == GuildID)
+				return serverSettings;
+		}
+		channel.sendMessage("Creating new settings profile for guild " + GuildID).queue();
+		ServerSettings newprofile = new ServerSettings(GuildID);
+		serverSettingss.add(newprofile);
 		return newprofile;
 	}
 	

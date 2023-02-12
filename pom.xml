@@ -28,5 +28,12 @@
   		<artifactId>JDA</artifactId>
   		<version>5.0.0-alpha.12</version>
   	</dependency>
+  	<!-- https://mvnrepository.com/artifact/net.objecthunter/exp4j -->
+	<dependency>
+	    <groupId>net.objecthunter</groupId>
+	    <artifactId>exp4j</artifactId>
+    <version>0.4.8</version>
+</dependency>
+
   </dependencies>
 </project>
