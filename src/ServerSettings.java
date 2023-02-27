@@ -23,7 +23,7 @@ public class ServerSettings extends Object implements Serializable {
 			if(rolepair.role == roleID && rolepair.tag.equals(tag))
 				return true;
 		}
-		rolepairs.add(new rolepair(roleID, tag));
+		rolepairs.add(new rolepair(roleID, tag.toLowerCase()));
 		return false;
 	}
 	
@@ -44,7 +44,7 @@ public class ServerSettings extends Object implements Serializable {
 	
 	public boolean DeleteTag(String tag) {
 		for (int i = 0; i < rolepairs.size(); i++) {
-			if(rolepairs.get(i).tag.equals(tag))
+			if(rolepairs.get(i).tag.toLowerCase().equals(tag.toLowerCase()))
 			{
 				rolepairs.remove(i);
 				return true;
@@ -55,7 +55,7 @@ public class ServerSettings extends Object implements Serializable {
 	
 	public long getRoleIDFromTag(String tag) {
 		for (rolepair rolepair : rolepairs) {
-			if(rolepair.tag.equals(tag))
+			if(rolepair.tag.toLowerCase().equals(tag.toLowerCase()))
 				return rolepair.role;
 		}
 		return -1;

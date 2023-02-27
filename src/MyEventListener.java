@@ -799,7 +799,7 @@ public class MyEventListener extends ListenerAdapter {
 + "2 3 两个礼拜以后 速度与激情9 ×3 不要忘记 不要错过 记得去电影院看速度与激情9 因为非常好电影 动作非常好 差不多一样冰淇淋 再见\r\n\r\n"
 					+ "中共万岁").queue();
 		}
-		if(command.startsWith("get")) {
+		if(command.startsWith("get") || command.startsWith("role")) {
 			String tag = GetArgAt(command, 1);
 			Guild thisGuild = event.getGuild();
 			ServerSettings thisServerSettings = GetServerProfile((int)thisGuild.getIdLong(), channel);
@@ -810,11 +810,12 @@ public class MyEventListener extends ListenerAdapter {
 				return;
 			}
 			
-			if(thisGuild.getMember(event.getAuthor()).getRoles().contains(thisGuild.getRoleById(roleID))) {
-				channel.sendMessage("Role already assigned").queue();
+			if(event.getMember().getRoles().contains(thisGuild.getRoleById(roleID))) {
+				thisGuild.removeRoleFromMember(event.getMember(), thisGuild.getRoleById(roleID)).queue();
+				channel.sendMessage("Role Removed").queue();
 				return;
 			}
-			thisGuild.addRoleToMember(event.getAuthor(), thisGuild.getRoleById(roleID)).queue();
+			thisGuild.addRoleToMember(event.getMember(), thisGuild.getRoleById(roleID)).queue();
 			channel.sendMessage("Role added").queue();	
 		}
 		
@@ -827,14 +828,17 @@ public class MyEventListener extends ListenerAdapter {
 				if(content.toLowerCase().startsWith(prefixString5)) {
 					command = content.substring(prefixString5.length());
 				}
-				if(!event.getGuild().getMember(event.getAuthor()).getPermissions().contains(Permission.MANAGE_SERVER)) {
+				ServerSettings thisServerSettings = GetServerProfile((int)event.getGuild().getIdLong(), channel);
+				if(!event.getMember().getPermissions().contains(Permission.MANAGE_SERVER)) {
 					channel.sendMessage("you're not real").queue();
 					return;
 				}
-				ServerSettings thisServerSettings = GetServerProfile((int)event.getGuild().getIdLong(), channel);
+				
 				
 				if(command.startsWith("help"))
-					channel.sendMessage("Server Management Settings (GPL) 2023 \nYour guild ID is " + event.getGuild().getId()).queue();
+					channel.sendMessage("Server Management Settings (GPL) 2023 \nYour guild ID is " + event.getGuild().getId() 
+							+ "\n\nsetrole <@role> <tag> - adds a tag to a role that can be used with s!get/s!role\n"
+							+ "delrole <@role> - removes all tags from a role").queue();
 				
 				if(command.startsWith("setrole")) {
 					List<Role> mentionsList = inputMessage.getMentions().getRoles();
