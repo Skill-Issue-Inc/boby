@@ -22,9 +22,9 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import uk.oczadly.karl.jnano.rpc.*;
-import uk.oczadly.karl.jnano.rpc.util.RpcServiceProviders;
-import uk.oczadly.karl.jnano.util.workgen.*;
+//import uk.oczadly.karl.jnano.rpc.*;
+//import uk.oczadly.karl.jnano.rpc.util.RpcServiceProviders;
+//import uk.oczadly.karl.jnano.util.workgen.*;
 import net.objecthunter.exp4j.*;
 
 public class MyEventListener extends ListenerAdapter {
@@ -34,9 +34,9 @@ public class MyEventListener extends ListenerAdapter {
 	public String prefixString4 = "n!";
 	public String prefixString5 = "a!";
 	public MessageChannel channel;
-	public List<FunProfile> lads = new ArrayList<FunProfile>();
-	public List<FunProfile> nanolads = new ArrayList<FunProfile>();
-	public List<ServerSettings> serverSettingss = new ArrayList<ServerSettings>();
+	public List<FunProfile> lads = new ArrayList<>();
+	public List<FunProfile> nanolads = new ArrayList<>();
+	public List<ServerSettings> serverSettingss = new ArrayList<>();
 	Random random = new Random();
 	public JDA api;
 	public int lyricline = 0;
@@ -44,8 +44,8 @@ public class MyEventListener extends ListenerAdapter {
 	public final String nanoName = System.getProperty("user.dir") + "/bot/" + "nano.ser";
 	public final String ssettingsName = System.getProperty("user.dir") + "/bot/" + "ssettings.ser";
 	public boolean sing;
-	WorkGenerator workGenerator = new CPUWorkGenerator(); // Note: construct once and re-use
-	RpcQueryNode rpc = RpcServiceProviders.nanex();
+	//WorkGenerator workGenerator = new CPUWorkGenerator(); // Note: construct once and re-use
+	//RpcQueryNode rpc = RpcServiceProviders.nanex();
 	
 	@SuppressWarnings("unchecked")
 	MyEventListener(JDA jda){
@@ -96,10 +96,10 @@ public class MyEventListener extends ListenerAdapter {
 		    	boolean contin = true;
 		    	while(contin) {
 		    		String text = scanner.nextLine();
-		    		if(text != "" && text != null) {
+		    		if(text != null && !text.equals("")) {
 		    			channel.sendMessage(text).queue();
-		    			System.out.println("");
-		    			if(text == "s!quit") {
+		    			System.out.println();
+		    			if(text.equals("s!quit")) {
 			    			contin = false;
 			    			System.out.println("Input Canceled");
 			    		}
@@ -127,17 +127,11 @@ public class MyEventListener extends ListenerAdapter {
 				|| content.toLowerCase().startsWith(prefixString4)
 				|| content.toLowerCase().startsWith(prefixString5)) {
 			String command = "";
-			if(content.toLowerCase().startsWith(prefixString)){
+			if(content.toLowerCase().startsWith(prefixString))
 				command = content.substring(prefixString.length());
-				//System.out.println("Prefix found! cutting to: " + command);
-				//System.out.println("Prefix length: " + prefixString.length());	
-			}
-			if(content.toLowerCase().startsWith(prefixString2)){
+			if(content.toLowerCase().startsWith(prefixString2))
 				command = content.substring(prefixString2.length());
-				//System.out.println("Prefix found! cutting to: " + command);
-				//System.out.println("Prefix length: " + prefixString.length());	
-			}
-			
+
 			if(!command.startsWith(prefixString3) && !command.startsWith(prefixString4) && !command.startsWith(prefixString5)) {
 			
 			if(command.startsWith("help")) {
@@ -155,10 +149,8 @@ public class MyEventListener extends ListenerAdapter {
 					} 
 					else
 					{
-						try {
-							String categ = GetArgs(command).get(0);
-						
-						
+						String categ = GetArgs(command).get(0);
+
 						System.out.println(categ);
 						if("main".contains(categ))
 							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**\n"
@@ -203,10 +195,9 @@ public class MyEventListener extends ListenerAdapter {
 									"yes - no\r\n" + 
 									"makebot - pings creator\r\n" +
 									"do the").queue();
-						} catch (Exception e) {}
+
 					}
-					
-					
+
 				System.out.println("Helped out: " + event.getAuthor().getName());
 				}
 			}
@@ -228,7 +219,7 @@ public class MyEventListener extends ListenerAdapter {
 			
 			if(command.startsWith("say ")) {
 				String arg1 = command.substring(4);
-				channel.sendMessage("" + arg1 + "").queue();
+				channel.sendMessage(arg1).queue();
 				System.out.println("Messsage Copied: " + command.substring(4) + " from " + event.getAuthor().getName());
 			}
 			
@@ -275,7 +266,7 @@ public class MyEventListener extends ListenerAdapter {
 			if(command.startsWith("amsgid")) {
 				channel.sendMessage("Jeez dude I'm workin' on it").queue();
 			}
-			try {
+			//try {
 				if(command.startsWith("motor")) {				
 					FileReturn ret = getFileFromDir("Motors", command);
 					channel.sendMessage((ret.index + 1) + "/" + ret.length).addFile(ret.file).queue();
@@ -294,10 +285,10 @@ public class MyEventListener extends ListenerAdapter {
 					channel.sendMessage((ret.index + 1) + "/" + ret.length + ": `" + ret.file.getName() + "`")
 					.addFile(ret.file).queue();
 				}
-			} catch (NullPointerException e) {}
+			//} catch (NullPointerException e) {}
 			if(command.toLowerCase().startsWith("bazinga")) {
 				File textFile = new File(System.getProperty("user.dir") + "/bot/bazinga.txt");
-				List<String> lines = new ArrayList<String>();
+				List<String> lines = new ArrayList<>();
 				try {
 					BufferedReader abc = new BufferedReader(new FileReader(textFile));
 					String line;
@@ -514,7 +505,7 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage(msg).queue();
 			}
 			if(command.startsWith("decide")) {
-				String msg = "";
+				String msg;
 				List<String> args = GetArgs(command);
 				msg = args.get(random.nextInt(args.size()));
 				channel.sendMessage("I choose " + msg).queue();
@@ -555,33 +546,6 @@ public class MyEventListener extends ListenerAdapter {
 	            // Notify the user.
 	            channel.sendMessage("Disconnected").queue();
 			}
-			/*if(command.startsWith("join")) {
-	            // Checks if the bot has permissions.
-	            if(!event.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
-	                // The bot does not have permission to join any voice channel. Don't forget the .queue()!
-	                channel.sendMessage("I do not have permissions to join a voice channel!").queue();
-	                return;
-	            }
-	            // Creates a variable equal to the channel that the user is in.
-	            VoiceChannel connectedChannel = event.getMember().getVoiceState().getChannel();
-	            // Checks if they are in a channel -- not being in a channel means that the variable = null.
-	            if(connectedChannel == null) {
-	                // Don't forget to .queue()!
-	                channel.sendMessage("You are not connected to a voice channel").queue();
-	                return;
-	            }
-	            // Gets the audio manager.
-	            AudioManager audioManager = event.getGuild().getAudioManager();
-	            // When somebody really needs to chill.
-	            if(audioManager.isAttemptingToConnect()) {
-	                channel.sendMessage("I'm workin on it").queue();
-	                return;
-	            }
-	            // Connects to the channel.
-	            audioManager.openAudioConnection(connectedChannel);
-	            // Obviously people do not notice someone/something connecting.
-	            channel.sendMessage("Connected").queue();
-			}*/
 			if(command.toLowerCase().startsWith("how are you") 
 					|| command.toLowerCase().startsWith("what are you")
 					|| command.toLowerCase().startsWith("tell us")
@@ -609,12 +573,13 @@ public class MyEventListener extends ListenerAdapter {
 				if(mentionsList.size() < 1) {
 					funguy = event.getAuthor();
 				}
-				try {
-					funguy = mentionsList.get(0).getUser();
-				} catch (Exception e) {
-					channel.sendMessage("Error in getting mention").queue();
-					return;
-				}
+				else
+					try {
+						funguy = mentionsList.get(0).getUser();
+					} catch (Exception e) {
+						channel.sendMessage("Error in getting mention").queue();
+						return;
+					}
 				channel.sendMessage(funguy.getAvatarUrl()).queue();
 			}
 			if(command.startsWith("shrine")) {
@@ -638,7 +603,7 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage("I am actively leaking your IP address on Twitter").queue();
 			}
 			if(command.startsWith("mock")) {
-			String E = "";
+			String E;
 			User funguy;
 			List<Member> mentionsList = inputMessage.getMentions().getMembers();
 			if(mentionsList.size() > 1) {
@@ -749,7 +714,7 @@ public class MyEventListener extends ListenerAdapter {
 				}
 			}
 			FileWriter fStream = new FileWriter("bot/exclude.txt", true);
-			fStream.append(event.getGuild().getId() + "\n");
+			fStream.append(event.getGuild().getId()).append("\n");
 			fStream.flush();
 			fStream.close();
 			channel.sendMessage("Toggled ambient messages **off**").queue();
@@ -793,9 +758,9 @@ public class MyEventListener extends ListenerAdapter {
 			Expression calc = new ExpressionBuilder(convertedString).build();
 			channel.sendMessage("The answer is " + calc.evaluate()).queue();
 		}
-		if("t".contains(command) && command != "") {
-			channel.sendMessage(""
-+ "早上好中国 现在我有冰淇淋 我很喜欢冰淇淋 但是 速度与激情9 比冰淇淋 速度与激情 速度与激情9 我最喜欢 所以…现在是音乐时间 准备 1 "
+		if("t".contains(command) && !command.equals("")) {
+			channel.sendMessage(
+"早上好中国 现在我有冰淇淋 我很喜欢冰淇淋 但是 速度与激情9 比冰淇淋 速度与激情 速度与激情9 我最喜欢 所以…现在是音乐时间 准备 1 "
 + "2 3 两个礼拜以后 速度与激情9 ×3 不要忘记 不要错过 记得去电影院看速度与激情9 因为非常好电影 动作非常好 差不多一样冰淇淋 再见\r\n\r\n"
 					+ "中共万岁").queue();
 		}
@@ -853,9 +818,9 @@ public class MyEventListener extends ListenerAdapter {
 					String tag = "";
 					try {
 						tag = GetArgAt(command, 2);
-					} catch (Exception e) {}
+					} catch (Exception ignored) {}
 					
-					if(tag == "") {
+					if(tag.equals("")) {
 						channel.sendMessage("what tag do I set for " + mentionsList.get(0).getAsMention() + "?"
 								+ "\nplease provide a tag (phrase used in the s!get command)").queue();
 						return;
@@ -892,9 +857,6 @@ public class MyEventListener extends ListenerAdapter {
 				
 				//save database or somethin
 				try {
-					/*for (ServerSettings settings : serverSettingss) {
-						funProfile.SetUserID();
-					}*/
 				    FileOutputStream fos = new FileOutputStream(ssettingsName);
 				    ObjectOutputStream oos = new ObjectOutputStream(fos);
 				    oos.writeObject(serverSettingss);
@@ -916,14 +878,7 @@ public class MyEventListener extends ListenerAdapter {
 					command = content.substring(prefixString4.length());
 					pre = "";
 				}
-				
-				//RESTRICTED CHANNEL ONLY ON THIS CHANNEL TM TM (R) FUNBUCKS 2021
-				//if(event.getChannel().getName().contains("funbucks")) {
 					FunProfile funfrom = GetNanoProfile(event.getAuthor(), channel);
-					/*if(funfrom.banned) {
-						channel.sendMessage("You have been banned from using nano related commands. Sorry").queue();
-						return;
-					}*/
 					
 					
 					//nano utility help
@@ -1018,11 +973,9 @@ public class MyEventListener extends ListenerAdapter {
 					}
 					if(command.startsWith(pre + "notif"))
 					{
-						FunProfile funto = funfrom;
+						funfrom.notif = !funfrom.notif;
 						
-						funto.notif = !funto.notif;
-						
-						if(funto.notif)
+						if(funfrom.notif)
 							channel.sendMessage("Ping notifications are now turned **on**").queue();
 						else
 							channel.sendMessage("Ping notifications are now turned **off**").queue();
@@ -1155,11 +1108,9 @@ public class MyEventListener extends ListenerAdapter {
 					}
 					if(command.startsWith(pre + "notif"))
 					{
-						FunProfile funto = funfrom;
+						funfrom.notif = !funfrom.notif;
 						
-						funto.notif = !funto.notif;
-						
-						if(funto.notif) {
+						if(funfrom.notif) {
 							channel.sendMessage("Ping notifications are now turned **on**").queue();
 						}
 						else {
@@ -1173,7 +1124,7 @@ public class MyEventListener extends ListenerAdapter {
 					
 					
 					//ADMIN STUFF TKOD ONLY DO BAD CRING YE HAHAHA FUN
-					if(event.getAuthor().getIdLong() == 410529944624693279l)
+					if(event.getAuthor().getIdLong() == 410529944624693279L)
 					{
 						//channel.sendMessage("Admin User Detected").queue();
 						
@@ -1394,8 +1345,8 @@ public class MyEventListener extends ListenerAdapter {
 		}
 		if((!content.toLowerCase().startsWith(prefixString) 
 				&& !content.toLowerCase().startsWith(prefixString2))
-				|| (content.toLowerCase() == prefixString + "sing"
-			    || content.toLowerCase() == prefixString2 + "sing")){
+				|| (content.toLowerCase().equals(prefixString + "sing")
+			    || content.toLowerCase().equals(prefixString2 + "sing"))){
 			if(event.getAuthor().isBot())
 				return;
 			
@@ -1465,7 +1416,7 @@ public class MyEventListener extends ListenerAdapter {
 				if("".contains(lyrics.get(currentline + 1)))
 					next = 2;
 				System.out.println("sending: " + lyrics.get(currentline + next));
-				channel.sendMessage(lyrics.get(currentline + next)).queue();;
+				channel.sendMessage(lyrics.get(currentline + next)).queue();
 				lyricline = currentline + next;
 				if(lyricline >= lyrics.size())
 					lyricline = 0;
@@ -1477,7 +1428,7 @@ public class MyEventListener extends ListenerAdapter {
 		Attachment attachment = null;
 		try {
 			attachment = inputMessage.getAttachments().get(0);
-		} catch (Exception e) {	} //no attachment
+		} catch (Exception ignored) {	} //no attachment
 		if(attachment != null && attachment.isVideo())
 		{
 			inputMessage.addReaction("U+2699").queue();
@@ -1528,7 +1479,7 @@ public class MyEventListener extends ListenerAdapter {
 	}
 	
 	private void AutoCropVideo(Message inputMessage) throws InterruptedException, IOException {
-		String filename = "NotDownloaded";
+		String filename;
 		try {
 			Attachment attachment = inputMessage.getAttachments().get(0);
 			if(attachment.isVideo()) {
@@ -1564,16 +1515,14 @@ public class MyEventListener extends ListenerAdapter {
 		for (Guild guild : api.getGuilds()) {
 			//System.out.println("Getting Guilds");
 			for (TextChannel channel : guild.getTextChannels()) {
-				//System.out.println("Getting Channels");
-				//System.out.println(channel.getName());
 				if(channel.getName().contains("fun-economy")) {
 					System.out.println("Found #fun-economy in " + guild.getName());
 					
-					((MessageChannel) channel).getHistory().retrievePast(1).queue(messages -> {
+					channel.getHistory().retrievePast(1).queue(messages -> {
 						String board = "Current registered members of the Fun:tm: economy:\n";
 						Collections.sort(lads);
 						for (FunProfile funProfile : lads) {
-							if(funProfile.owner.getIdLong() == 410529944624693279l)
+							if(funProfile.owner.getIdLong() == 410529944624693279L)
 							{
 								board += "$" + "∞" + " <:funbuckplus:886723353199656960> " 
 										+ funProfile.owner.getAsMention() + " \"I own the economy\" \n";
@@ -1644,10 +1593,7 @@ public class MyEventListener extends ListenerAdapter {
 	}
 	
 	private String RemovePunct(String input) {
-		/*if(input.contains("(")) {
-			input = input.substring(0, input.indexOf('('));
-		}*/
-		return input.replace("\'", "").replace("-", " ").replace(".", "")
+		return input.replace("'", "").replace("-", " ").replace(".", "")
 				.replace("?", "").replace(",", "").replace("\"", "");
 	}
 	
@@ -1656,7 +1602,7 @@ public class MyEventListener extends ListenerAdapter {
 		String dirString = (System.getProperty("user.dir") + "/bot/" + dir + "/");
 		File toDownload = new File(dirString + attachment.getFileName());
 		while (toDownload.exists()) {
-			toDownload.getName().lastIndexOf('.');
+			//toDownload.getName().lastIndexOf('.');
 			toDownload = new File(dirString 
 					+ toDownload.getName().substring(0, toDownload.getName().lastIndexOf('.'))
 							+ "0." + attachment.getFileExtension());
@@ -1668,7 +1614,7 @@ public class MyEventListener extends ListenerAdapter {
 	
 	private List<String> ReadTextFile(String file) {
 		File textFile = new File(System.getProperty("user.dir") + "/bot/" + file);
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
 		try {
 			BufferedReader abc = new BufferedReader(new FileReader(textFile));
 			String line;
@@ -1682,27 +1628,32 @@ public class MyEventListener extends ListenerAdapter {
 		return lines;
 	}
 	
-	class FileReturn {
+	static class FileReturn {
 		File file;
 		int index;
 		int length;
 	}
 	
+	@SuppressWarnings("all")
 	private void DeleteFiles(String dir)
 	{
-		File filesList[] = new File(System.getProperty("user.dir") + "/bot/" + dir).listFiles();
+		File[] filesList = new File(System.getProperty("user.dir") + "/bot/" + dir).listFiles();
+		assert filesList != null;
 		for(File file : filesList) {
 			if(file.isFile()) {
-				file.delete();
+				if(!file.delete())
+					System.out.println(file.getName() + ": File deletion failed!");
 			}
 		}
 	}
 	
 	private FileReturn getFileFromDir(String dirname, String command) {
 		File MotorDir = new File(System.getProperty("user.dir") + "/bot/" + dirname);
-		String contents[] = MotorDir.list();
+		String[] contents = MotorDir.list();
 		System.out.println(System.getProperty("user.dir") + "/bot/" + dirname);
+		assert contents != null;
 		int select = random.nextInt(contents.length);
+
 		if(command != null) {
 			try {
 				select = Integer.parseInt(GetNextArg(command)) - 1;
@@ -1739,7 +1690,7 @@ public class MyEventListener extends ListenerAdapter {
 		return GetArgs(command).get(arglevel - 1);
 	}
 	private List<String> GetArgs(String command) {//othello7 frick(TM) arg parser
-		List<String> Args = new ArrayList<String>();//Set up list for the args
+		List<String> Args = new ArrayList<>();//Set up list for the args
 		//arglevel //the arg number
 		int index = 0; //how many loop points
 		int start = 0; //the location of the arg

@@ -1,7 +1,10 @@
 .project
 .classpath
 .settings/
+.idea/
 bin/
 bot/img/*
 bot/token.txt
 /target/
+bot/nano.ser
+bot/ssettings.ser
