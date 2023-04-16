@@ -8,3 +8,5 @@ bot/token.txt
 /target/
 bot/nano.ser
 bot/ssettings.ser
+META-INF/
+classes/

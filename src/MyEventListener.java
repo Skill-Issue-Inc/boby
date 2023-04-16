@@ -849,7 +849,18 @@ public class MyEventListener extends ListenerAdapter {
 					
 				}
 				if(command.startsWith("deltag") || command.startsWith("deletetag")) {
-					
+					String tag = GetArgAt(command, 1);
+					long roleID = thisServerSettings.getRoleIDFromTag(tag);
+					if(roleID == -1)
+					{
+						channel.sendMessage("tag doesn't link to a role").queue();
+						return;
+					}
+
+					if(thisServerSettings.DeleteTag(tag))
+						channel.sendMessage("Tag has been deleted from \"" + roleID + "\"").queue();
+					else
+						channel.sendMessage("no beans").queue();
 				}
 				if(command.startsWith("printroles")) {
 					channel.sendMessage(thisServerSettings.debugfrick()).queue();
