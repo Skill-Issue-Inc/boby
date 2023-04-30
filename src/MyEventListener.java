@@ -1466,16 +1466,13 @@ public class MyEventListener extends ListenerAdapter {
 			if (x > 10 || y > 10){
 				inputMessage.addReaction("U+26A0").queue();
 				channel.sendMessage(
-"\u26A0 Cringe Detected!\n "
-+ "Your video has black bars in it that can be autocropped out. "
-+ "I shall do it for you since you didn't put it in an autocropper "
-+ "(can be manually called from s!autocrop) or I could be dumb bot :P \n\n"
-+ "-- AUTOCROP (" + crop + ") BEGIN --").queue();
+"(" + crop + ") Your video has large black bars in it that can be autocropped out. " +
+"I will run s!autocrop on  it, but if this is incorrect please report this to othello7").queue();
 				AutoCropVideo(inputMessage);
 			}
 			else {
 				inputMessage.addReaction("U+2705").queue();
-				Thread.sleep(8*1000);
+				Thread.sleep(3*1000);
 				inputMessage.removeReaction("U+2705").queue();
 				DeleteFiles("autocrop");
 			}
