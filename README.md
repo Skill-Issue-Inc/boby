@@ -1,5 +1,5 @@
 # Boby#8915
-Featurefull discord bot with things such as Funbucks™️, Lyric Continuation Complex, and Frick™️ Arg Parser.
+Featureful discord bot with things such as Funbucks™️, Lyric Continuation Complex, and Frick™️ Arg Parser.
 ## Commands
 #### PREFIX: "s!" and "boby " for commands listed here
 #### Key: Command (required field) [optional field] {attachment} - what it does  
@@ -44,7 +44,8 @@ yes - no
 makebot - pings creator  
 
 ### Other Features:  
--lyric continuation complex to it so that if you say any full lyric line in your sentence it will send the next one  
--responds when boby is mentioned  
--responds to "boby should do"  
--add "list" to the end of image repos to see the contents  
+- lyric continuation complex to it so that if you say any full lyric line in your sentence it will send the next one  
+- ffmpeg Automatic Crop autodetection feature
+- responds when boby is mentioned  
+- responds to "boby should do"  
+- add "list" to the end of image repos to see the contents  
