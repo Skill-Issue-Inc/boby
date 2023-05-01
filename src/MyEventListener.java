@@ -1,14 +1,10 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +14,7 @@ import java.util.Scanner;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.utils.FileUpload;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -1509,22 +1506,31 @@ public class MyEventListener extends ListenerAdapter {
 				return;
 			}
 		} catch (Exception e) {
-			/*String content = message.getContentRaw();
+			String content = inputMessage.getContentRaw();
 
 			if (content.contains("http")) {
 				// Extract link from message
 				String link = content.substring(content.indexOf("http"));
 
 				// Check if link leads to a video
-				Document doc = Jsoup.connect(link).get();
-				String contentType = doc.contentType();
+				Connection.Response response = Jsoup.connect(link).execute();
+				String contentType = response.contentType();
 
 				if (contentType.startsWith("video")) {
-					return true;
+					HttpClient httpClient = HttpClient.newHttpClient();
+					HttpRequest httpRequest = HttpRequest.newBuilder().uri(URI.create(link)).build();
+					HttpResponse<InputStream> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofInputStream());
+					try (InputStream inputStream = httpResponse.body()) {
+						Files.copy(inputStream, Paths.get(link.substring(link.lastIndexOf('/'))));
+					}
+
 				}
-			}*/
-
-
+				else
+				{
+					channel.sendMessage("Link doesn't lead to a video!").queue();
+					return;
+				}
+			}
 			channel.sendMessage("No attachment or link").queue();
 			return;
 		}
@@ -1541,7 +1547,7 @@ public class MyEventListener extends ListenerAdapter {
 		String newfilename = filename.substring(0, dotindex) + "_autocrop" + filename.substring(dotindex);
 		File cropDir = new File(System.getProperty("user.dir") + "/bot/autocrop/");
 		channel.sendMessage(autocropmessage + "Cropped:").addFiles(FileUpload.fromData(new File(cropDir, newfilename))).queue();
-		
+
 		DeleteFiles("autocrop");
 	}
 	
