@@ -665,7 +665,7 @@ public class MyEventListener extends ListenerAdapter {
 			channel.sendMessage(E).queue();
 		}
 		if(command.startsWith("autocrop")) {
-			AutoCropVideo(inputMessage);
+			AutoCropVideo(inputMessage, false);
 			return;
 		}	
 		if(command.startsWith("ratio")) {
@@ -1465,10 +1465,7 @@ public class MyEventListener extends ListenerAdapter {
 			inputMessage.removeReaction("U+2699").queue();
 			if (x > 10 || y > 10){
 				inputMessage.addReaction("U+26A0").queue();
-				channel.sendMessage(
-"(" + crop + ") Your video has large black bars in it that can be autocropped out. " +
-"I will run s!autocrop on  it, but if this is incorrect please report this to othello7").queue();
-				AutoCropVideo(inputMessage);
+				AutoCropVideo(inputMessage, true);
 			}
 			else {
 				inputMessage.addReaction("U+2705").queue();
@@ -1486,8 +1483,15 @@ public class MyEventListener extends ListenerAdapter {
 		}
 	}
 	
-	private void AutoCropVideo(Message inputMessage) throws InterruptedException, IOException {
+	private void AutoCropVideo(Message inputMessage, boolean autoautocrop) throws InterruptedException, IOException {
 		String filename;
+		final String converting = "U+1F504";
+		final String uploading = "U+1F4E4";
+		String autocropmessage = "";
+		if(autoautocrop)
+			autocropmessage = "Your video has large black bars in it that can be autocropped out. " +
+				"I will run s!autocrop on  it, but if this is incorrect please report this to othello7. ";
+
 		try {
 			Attachment attachment = inputMessage.getAttachments().get(0);
 			if(attachment.isVideo()) {
@@ -1497,23 +1501,25 @@ public class MyEventListener extends ListenerAdapter {
 				return;
 			}
 		} catch (Exception e) {
-			channel.sendMessage("No attachment").queue();
+			inputMessage.
+
+
+			channel.sendMessage("No attachment or link").queue();
 			return;
 		}
-		
-		channel.sendMessage("converting").queue();
-		
+
+		//convert
+		inputMessage.addReaction(converting).queue();
 		ProcessBuilder pb = new ProcessBuilder("sh", "autocrop.sh", "autocrop/" + filename);
 		pb.directory(new File(System.getProperty("user.dir") + "/bot/"));
 		pb.start().waitFor();
-		
-		channel.sendMessage("uploading").queue();
+
+		//upload
+		inputMessage.addReaction(uploading).queue();
 		int dotindex = filename.lastIndexOf('.');
 		String newfilename = filename.substring(0, dotindex) + "_autocrop" + filename.substring(dotindex);
-		File MotorDir = new File(System.getProperty("user.dir") + "/bot/autocrop/");
-		FileReturn ret = new FileReturn();
-		ret.file = new File(MotorDir, newfilename);
-		channel.sendMessage(newfilename).addFile(ret.file).queue();
+		File cropDir = new File(System.getProperty("user.dir") + "/bot/autocrop/");
+		channel.sendMessage(autocropmessage + "Cropped:").addFile(new File(cropDir, newfilename)).queue();
 		
 		DeleteFiles("autocrop");
 	}
