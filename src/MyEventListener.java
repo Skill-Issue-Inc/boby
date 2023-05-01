@@ -15,6 +15,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.utils.FileUpload;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
@@ -269,21 +277,21 @@ public class MyEventListener extends ListenerAdapter {
 			//try {
 				if(command.startsWith("motor")) {				
 					FileReturn ret = getFileFromDir("Motors", command);
-					channel.sendMessage((ret.index + 1) + "/" + ret.length).addFile(ret.file).queue();
+					channel.sendMessage((ret.index + 1) + "/" + ret.length).addFiles(FileUpload.fromData(ret.file)).queue();
 				}
 				if(command.startsWith("jojo")) {
 					FileReturn ret = getFileFromDir("JOJO", command);
-					channel.sendMessage((ret.index + 1) + "/" + ret.length).addFile(ret.file).queue();
+					channel.sendMessage((ret.index + 1) + "/" + ret.length).addFiles(FileUpload.fromData(ret.file)).queue();
 				}
 				if(command.startsWith("img")) {
 					FileReturn ret = getFileFromDir("img", command);
 					channel.sendMessage((ret.index + 1) + "/" + ret.length + ": `" + ret.file.getName() + "`")
-						.addFile(ret.file).queue();
+						.addFiles(FileUpload.fromData(ret.file)).queue();
 				}
 				if(command.startsWith("E")) {
 					FileReturn ret = getFileFromDir("E", command);
 					channel.sendMessage((ret.index + 1) + "/" + ret.length + ": `" + ret.file.getName() + "`")
-					.addFile(ret.file).queue();
+					.addFiles(FileUpload.fromData(ret.file)).queue();
 				}
 			//} catch (NullPointerException e) {}
 			if(command.toLowerCase().startsWith("bazinga")) {
@@ -407,7 +415,7 @@ public class MyEventListener extends ListenerAdapter {
 					sendString = "Hmm, well this is awkward, it landed on its side. **You decide!**";
 					ret.file = new File(System.getProperty("user.dir") + "/bot/side.png");
 				}
-				channel.sendMessage(sendString).addFile(ret.file).queue();
+				channel.sendMessage(sendString).addFiles(FileUpload.fromData(ret.file)).queue();
 			}
 			if(command.startsWith("flip")) {
 				FileReturn ret = getFileFromDir("flip", null);
@@ -416,7 +424,7 @@ public class MyEventListener extends ListenerAdapter {
 					sendString = "**Heads! :+1:**";
 				if(ret.index == 0)
 					sendString = "**Tails! :-1:**";
-				channel.sendMessage(sendString).addFile(ret.file).queue();
+				channel.sendMessage(sendString).addFiles(FileUpload.fromData(ret.file)).queue();
 			}
 			if(command.startsWith("spamE")) {
 				String l = command.substring(6);
@@ -494,9 +502,9 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage(E).queue();
 			}
 			if(command.startsWith("yeet")) {
-				List<Emote> emotes = event.getGuild().getEmotes();
+				List<RichCustomEmoji> emotes = event.getGuild().getEmojis();
 				String msg = "";
-				for (Emote emote : emotes) {
+				for (RichCustomEmoji emote : emotes) {
 					msg += emote.getAsMention();
 				}
 				if(emotes.size() == 0) {
@@ -678,9 +686,9 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage("please tell me who to ratio").queue();
 				return;
 			}
-			inputMessage.addReaction("U+267B").queue();
-			inputMessage.addReaction("U+2764").queue();
-			inputMessage.addReaction("U+1F4AC").queue();
+			inputMessage.addReaction(Emoji.fromUnicode("U+267B")).queue();
+			inputMessage.addReaction(Emoji.fromUnicode("U+2764")).queue();
+			inputMessage.addReaction(Emoji.fromUnicode("U+1F4AC")).queue();
 			channel.sendMessage(mentionsList.get(0).getAsMention() + " has been ratio’d!").queue();
 		}	
 		if(command.startsWith("ambient")) {
@@ -1442,7 +1450,7 @@ public class MyEventListener extends ListenerAdapter {
 		} catch (Exception ignored) {	} //no attachment
 		if(attachment != null && attachment.isVideo())
 		{
-			inputMessage.addReaction("U+2699").queue();
+			inputMessage.addReaction(Emoji.fromUnicode("U+2699")).queue();
 			
 			String filename = (DownloadFile(attachment, "autocrop"));
 			
@@ -1462,15 +1470,15 @@ public class MyEventListener extends ListenerAdapter {
 			int x = Integer.parseInt(crop.substring(0, crop.indexOf(':')));
 			int y = Integer.parseInt(crop.substring(crop.indexOf(':') + 1));
 			
-			inputMessage.removeReaction("U+2699").queue();
+			inputMessage.removeReaction(Emoji.fromUnicode("U+2699")).queue();
 			if (x > 10 || y > 10){
-				inputMessage.addReaction("U+26A0").queue();
+				inputMessage.addReaction(Emoji.fromUnicode("U+26A0")).queue();
 				AutoCropVideo(inputMessage, true);
 			}
 			else {
-				inputMessage.addReaction("U+2705").queue();
+				inputMessage.addReaction(Emoji.fromUnicode("U+2705")).queue();
 				Thread.sleep(3*1000);
-				inputMessage.removeReaction("U+2705").queue();
+				inputMessage.removeReaction(Emoji.fromUnicode("U+2705")).queue();
 				DeleteFiles("autocrop");
 			}
 			
@@ -1485,8 +1493,8 @@ public class MyEventListener extends ListenerAdapter {
 	
 	private void AutoCropVideo(Message inputMessage, boolean autoautocrop) throws InterruptedException, IOException {
 		String filename;
-		final String converting = "U+1F504";
-		final String uploading = "U+1F4E4";
+		final Emoji converting = Emoji.fromUnicode("U+1F504");
+		final Emoji uploading = Emoji.fromUnicode("U+1F4E4");
 		String autocropmessage = "";
 		if(autoautocrop)
 			autocropmessage = "Your video has large black bars in it that can be autocropped out. " +
@@ -1501,7 +1509,20 @@ public class MyEventListener extends ListenerAdapter {
 				return;
 			}
 		} catch (Exception e) {
-			inputMessage.
+			/*String content = message.getContentRaw();
+
+			if (content.contains("http")) {
+				// Extract link from message
+				String link = content.substring(content.indexOf("http"));
+
+				// Check if link leads to a video
+				Document doc = Jsoup.connect(link).get();
+				String contentType = doc.contentType();
+
+				if (contentType.startsWith("video")) {
+					return true;
+				}
+			}*/
 
 
 			channel.sendMessage("No attachment or link").queue();
@@ -1519,7 +1540,7 @@ public class MyEventListener extends ListenerAdapter {
 		int dotindex = filename.lastIndexOf('.');
 		String newfilename = filename.substring(0, dotindex) + "_autocrop" + filename.substring(dotindex);
 		File cropDir = new File(System.getProperty("user.dir") + "/bot/autocrop/");
-		channel.sendMessage(autocropmessage + "Cropped:").addFile(new File(cropDir, newfilename)).queue();
+		channel.sendMessage(autocropmessage + "Cropped:").addFiles(FileUpload.fromData(new File(cropDir, newfilename))).queue();
 		
 		DeleteFiles("autocrop");
 	}
