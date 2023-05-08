@@ -1,0 +1,1 @@
+this folder is where autocropped videos will temporarily be stored. all files in it will be deleted regularly!

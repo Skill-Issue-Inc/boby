@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -1489,59 +1491,65 @@ public class MyEventListener extends ListenerAdapter {
 	}
 
 	private void AutoCropVideo(Message inputMessage, boolean autoautocrop) throws InterruptedException, IOException {
-		String filename;
-		final Emoji converting = Emoji.fromUnicode("U+1F504");
-		final Emoji uploading = Emoji.fromUnicode("U+1F4E4");
-		String autocropmessage = "";
-		if(autoautocrop)
-			autocropmessage = "Your video has large black bars in it that can be autocropped out. " +
-				"I will run s!autocrop on  it, but if this is incorrect please report this to othello7. ";
+		CompletableFuture.runAsync(() -> {
+			DeleteFiles("autocrop");
+			String filename;
+			final Emoji converting = Emoji.fromUnicode("U+1F504");
+			final Emoji uploading = Emoji.fromUnicode("U+1F4E4");
+			String autocropmessage = "";
+			if(autoautocrop)
+				autocropmessage = "Your video has large black bars in it that can be autocropped out. " +
+					"I will run s!autocrop on  it, but if this is incorrect please report this to othello7. ";
 
-		try { //get attachments
-			Attachment attachment = inputMessage.getAttachments().get(0);
-			if(attachment.isVideo()) {
-				filename = (DownloadFile(attachment, "autocrop"));
-			} else {
-				channel.sendMessage("Attachment is not a video").queue();
-				return;
-			}
-		} catch (Exception e) { //get link
-			String content = inputMessage.getContentRaw();
-			if (content.contains("http")) {
-				// Extract link from message
-				String link = content.substring(content.indexOf("http"));
-
-				// Check if link leads to a video
-				//Connection.Response response = Jsoup.connect(link).execute();
-				String contentType = "video";//response.contentType();
-
-				if (contentType.startsWith("video")) {
-					filename = DownloadFile(link, "autocrop");
+			try { //get attachments
+				Attachment attachment = inputMessage.getAttachments().get(0);
+				if(attachment.isVideo()) {
+					filename = (DownloadFile(attachment, "autocrop"));
 				} else {
-					channel.sendMessage("Link doesn't lead to a video!").queue();
+					channel.sendMessage("Attachment is not a video").queue();
+					return;
+				}
+			} catch (Exception e) { //get link
+				String content = inputMessage.getContentRaw();
+				if (content.contains("http")) {
+					// Extract link from message
+					String link = content.substring(content.indexOf("http"));
+
+					// Check if link leads to a video
+					//Connection.Response response = Jsoup.connect(link).execute();
+					String contentType = "video";//response.contentType();
+
+					if (contentType.startsWith("video")) {
+						filename = DownloadFile(link, "autocrop");
+					} else {
+						channel.sendMessage("Link doesn't lead to a video!").queue();
+						return;
+					}
+				}
+				else{
+					channel.sendMessage("No attachment or link").queue();
 					return;
 				}
 			}
-			else{
-				channel.sendMessage("No attachment or link").queue();
-				return;
+
+			try {
+				//convert
+				inputMessage.addReaction(converting).queue();
+				ProcessBuilder pb = new ProcessBuilder("sh", "autocrop.sh", "autocrop/" + filename);
+				pb.directory(new File(System.getProperty("user.dir") + "/bot/"));
+				pb.start().waitFor();
+			} catch (IOException | InterruptedException e) {
+				channel.sendMessage("Error processing your video :(").queue();
 			}
-		}
 
-		//convert
-		inputMessage.addReaction(converting).queue();
-		ProcessBuilder pb = new ProcessBuilder("sh", "autocrop.sh", "autocrop/" + filename);
-		pb.directory(new File(System.getProperty("user.dir") + "/bot/"));
-		pb.start().waitFor();
 
-		//upload
-		inputMessage.addReaction(uploading).queue();
-		int dotindex = filename.lastIndexOf('.');
-		String newfilename = filename.substring(0, dotindex) + "_autocrop" + filename.substring(dotindex);
-		File cropDir = new File(System.getProperty("user.dir") + "/bot/autocrop/");
-		channel.sendMessage(autocropmessage + "Cropped:").addFiles(FileUpload.fromData(new File(cropDir, newfilename))).queue();
-
-		DeleteFiles("autocrop");
+			//upload
+			inputMessage.addReaction(uploading).queue();
+			int dotindex = filename.lastIndexOf('.');
+			String newfilename = filename.substring(0, dotindex) + "_autocrop" + filename.substring(dotindex);
+			File cropDir = new File(System.getProperty("user.dir") + "/bot/autocrop/");
+			channel.sendMessage(autocropmessage + "Cropped:").addFiles(FileUpload.fromData(new File(cropDir, newfilename))).queue();
+		}, Executors.newSingleThreadExecutor());
 	}
 
 	private void UpdateEconomy() {
