@@ -1442,47 +1442,47 @@ public class MyEventListener extends ListenerAdapter {
 			}
 		}
 
-		//video autocroppper
-		Attachment attachment = null;
-		try {
-			attachment = inputMessage.getAttachments().get(0);
-		} catch (Exception ignored) {	} //no attachment
-		if(attachment != null && attachment.isVideo())
-		{
-			inputMessage.addReaction(Emoji.fromUnicode("U+2699")).queue();
+			//video autocroppper
+			if(inputMessage.getAuthor().getIdLong() != 341393480469184513L) { //exclude @nova from this
+				Attachment attachment = null;
+				try {
+					attachment = inputMessage.getAttachments().get(0);
+				} catch (Exception ignored) {
+				} //no attachment
+				if (attachment != null && attachment.isVideo()) {
+					inputMessage.addReaction(Emoji.fromUnicode("U+2699")).queue();
 
-			String filename = (DownloadFile(attachment, "autocrop"));
+					String filename = (DownloadFile(attachment, "autocrop"));
 
-			ProcessBuilder pb = new ProcessBuilder("sh", "cropdetect.sh", "autocrop/" + filename);
-			pb.directory(new File(System.getProperty("user.dir") + "/bot/"));
-			Process p = pb.start();
-            
-            // Read and print the standard output stream of the process 
-			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line;
-			StringBuilder sb = new StringBuilder();
-			p.waitFor();
-			while((line=br.readLine())!=null) sb.append(line);
-			String crop = sb.toString();
-			System.out.println(crop);
+					ProcessBuilder pb = new ProcessBuilder("sh", "cropdetect.sh", "autocrop/" + filename);
+					pb.directory(new File(System.getProperty("user.dir") + "/bot/"));
+					Process p = pb.start();
 
-			int x = Integer.parseInt(crop.substring(0, crop.indexOf(':')));
-			int y = Integer.parseInt(crop.substring(crop.indexOf(':') + 1));
+					// Read and print the standard output stream of the process
+					BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+					String line;
+					StringBuilder sb = new StringBuilder();
+					p.waitFor();
+					while ((line = br.readLine()) != null) sb.append(line);
+					String crop = sb.toString();
+					System.out.println(crop);
 
-			inputMessage.removeReaction(Emoji.fromUnicode("U+2699")).queue();
-			if (x > 10 || y > 10){
-				inputMessage.addReaction(Emoji.fromUnicode("U+26A0")).queue();
-				AutoCropVideo(inputMessage, true);
+					int x = Integer.parseInt(crop.substring(0, crop.indexOf(':')));
+					int y = Integer.parseInt(crop.substring(crop.indexOf(':') + 1));
+
+					inputMessage.removeReaction(Emoji.fromUnicode("U+2699")).queue();
+					if (x > 10 || y > 10) {
+						inputMessage.addReaction(Emoji.fromUnicode("U+26A0")).queue();
+						AutoCropVideo(inputMessage, true);
+					} else {
+						inputMessage.addReaction(Emoji.fromUnicode("U+2705")).queue();
+						Thread.sleep(3 * 1000);
+						inputMessage.removeReaction(Emoji.fromUnicode("U+2705")).queue();
+						DeleteFiles("autocrop");
+					}
+
+				}
 			}
-			else {
-				inputMessage.addReaction(Emoji.fromUnicode("U+2705")).queue();
-				Thread.sleep(3*1000);
-				inputMessage.removeReaction(Emoji.fromUnicode("U+2705")).queue();
-				DeleteFiles("autocrop");
-			}
-
-		}
-
 		super.onMessageReceived(event);
 		}catch (Exception e) {
 			channel.sendMessage("Sorry, my brain is spaghetti code :( \nError in command: " + e.toString()).queue();
