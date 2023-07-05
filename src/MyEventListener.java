@@ -36,12 +36,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.objecthunter.exp4j.*;
 
 public class MyEventListener extends ListenerAdapter {
-	public String prefixString  = "s!";
-	public String prefixString2 = "boby ";
-	public String prefixString3 = "f!";
-	public String prefixString4 = "n!";
-	public String prefixString5 = "a!";
-	public MessageChannel channel;
+	public MessageChannel globalChannel;
+	public final String prefixString  = "s!";
+	public final String prefixString2 = "boby ";
+	public final String prefixString3 = "f!";
+	public final String prefixString4 = "n!";
+	public final String prefixString5 = "a!";
 	public List<FunProfile> lads = new ArrayList<>();
 	public List<FunProfile> nanolads = new ArrayList<>();
 	public List<ServerSettings> serverSettingss = new ArrayList<>();
@@ -52,6 +52,7 @@ public class MyEventListener extends ListenerAdapter {
 	public final String nanoName = System.getProperty("user.dir") + "/bot/" + "nano.ser";
 	public final String ssettingsName = System.getProperty("user.dir") + "/bot/" + "ssettings.ser";
 	public boolean sing;
+	public GuildChannel lastDebugChannel;
 	//WorkGenerator workGenerator = new CPUWorkGenerator(); // Note: construct once and re-use
 	//RpcQueryNode rpc = RpcServiceProviders.nanex();
 
@@ -105,7 +106,7 @@ public class MyEventListener extends ListenerAdapter {
 		    	while(contin) {
 		    		String text = scanner.nextLine();
 		    		if(text != null && !text.equals("")) {
-		    			channel.sendMessage(text).queue();
+						globalChannel.sendMessage(text).queue();
 		    			System.out.println();
 		    			if(text.equals("s!quit")) {
 			    			contin = false;
@@ -120,13 +121,22 @@ public class MyEventListener extends ListenerAdapter {
 	//@SuppressWarnings("deprecation")
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
+		MessageChannel channel; //this gets used literally everywhere lmao
+
 		if(event.getAuthor().isBot() && !(event.getMessage().getContentRaw().toLowerCase().contains(prefixString) ||
 		   event.getMessage().getContentRaw().toLowerCase().contains(prefixString2))) return;
 
 		Message inputMessage = event.getMessage(); //save input message
 		channel = event.getChannel(); //respond in same channel
+		globalChannel = event.getChannel(); //global should only be used where you know threading isnt a skissue
 		String content = inputMessage.getContentRaw(); //get the raw content of the message
-		System.out.println(event.getAuthor().getName() + ": " + content);
+		//this is a DEBUG LOG. and for some reason gets often used as an ADMIN LOG. make a real ADMIN LOG for ADMINS *LATER* please.
+		if(lastDebugChannel == null || lastDebugChannel != event.getGuildChannel())
+		{
+			lastDebugChannel = event.getGuildChannel();
+			System.out.println("[" + event.getGuild().getName() + " | #" + event.getGuildChannel().getName() + "]: ");
+		}
+		System.out.println("<@" + event.getAuthor().getName() + ">: " + content);
 
 		try {
 		if(content.toLowerCase().startsWith(prefixString)
@@ -277,20 +287,20 @@ public class MyEventListener extends ListenerAdapter {
 			}
 			//try {
 				if(command.startsWith("motor")) {
-					FileReturn ret = getFileFromDir("Motors", command);
+					FileReturn ret = getFileFromDir(channel, "Motors", command);
 					channel.sendMessage((ret.index + 1) + "/" + ret.length).addFiles(FileUpload.fromData(ret.file)).queue();
 				}
 				if(command.startsWith("jojo")) {
-					FileReturn ret = getFileFromDir("JOJO", command);
+					FileReturn ret = getFileFromDir(channel, "JOJO", command);
 					channel.sendMessage((ret.index + 1) + "/" + ret.length).addFiles(FileUpload.fromData(ret.file)).queue();
 				}
 				if(command.startsWith("img")) {
-					FileReturn ret = getFileFromDir("img", command);
+					FileReturn ret = getFileFromDir(channel, "img", command);
 					channel.sendMessage((ret.index + 1) + "/" + ret.length + ": `" + ret.file.getName() + "`")
 						.addFiles(FileUpload.fromData(ret.file)).queue();
 				}
 				if(command.startsWith("E")) {
-					FileReturn ret = getFileFromDir("E", command);
+					FileReturn ret = getFileFromDir(channel, "E", command);
 					channel.sendMessage((ret.index + 1) + "/" + ret.length + ": `" + ret.file.getName() + "`")
 					.addFiles(FileUpload.fromData(ret.file)).queue();
 				}
@@ -406,7 +416,7 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage("I didnt know you'd actually try and use this yet").queue();
 			}
 			if(command.startsWith("tacoflip")) {
-				FileReturn ret = getFileFromDir("tacoflip", null);
+				FileReturn ret = getFileFromDir(channel, "tacoflip", null);
 				String sendString = "Error";
 				if(ret.index == 1)
 					sendString = "**Heads! :+1:**";
@@ -419,7 +429,7 @@ public class MyEventListener extends ListenerAdapter {
 				channel.sendMessage(sendString).addFiles(FileUpload.fromData(ret.file)).queue();
 			}
 			if(command.startsWith("flip")) {
-				FileReturn ret = getFileFromDir("flip", null);
+				FileReturn ret = getFileFromDir(channel, "flip", null);
 				String sendString = "Error";
 				if(ret.index == 1)
 					sendString = "**Heads! :+1:**";
@@ -674,7 +684,7 @@ public class MyEventListener extends ListenerAdapter {
 			channel.sendMessage(E).queue();
 		}
 		if(command.startsWith("autocrop")) {
-			AutoCropVideo(inputMessage, false);
+			AutoCropVideo(channel, inputMessage, false);
 			return;
 		}
 		if(command.startsWith("ratio")) {
@@ -1478,7 +1488,7 @@ public class MyEventListener extends ListenerAdapter {
 					inputMessage.removeReaction(Emoji.fromUnicode("U+2699")).queue();
 					if (x > 10 || y > 10) {
 						inputMessage.addReaction(Emoji.fromUnicode("U+26A0")).queue();
-						AutoCropVideo(inputMessage, true);
+						AutoCropVideo(channel, inputMessage, true);
 					} else {
 						inputMessage.addReaction(Emoji.fromUnicode("U+2705")).queue();
 						Thread.sleep(3 * 1000);
@@ -1495,7 +1505,7 @@ public class MyEventListener extends ListenerAdapter {
 		}
 	}
 
-	private void AutoCropVideo(Message inputMessage, boolean autoautocrop) {
+	private void AutoCropVideo(MessageChannel channel, Message inputMessage, boolean autoautocrop) {
 		CompletableFuture.runAsync(() -> {
 			DeleteFiles("autocrop");
 			String filename;
@@ -1713,7 +1723,7 @@ public class MyEventListener extends ListenerAdapter {
 		}
 	}
 
-	private FileReturn getFileFromDir(String dirname, String command) {
+	private FileReturn getFileFromDir(MessageChannel channel, String dirname, String command) {
 		File MotorDir = new File(System.getProperty("user.dir") + "/bot/" + dirname);
 		String[] contents = MotorDir.list();
 		System.out.println(System.getProperty("user.dir") + "/bot/" + dirname);
