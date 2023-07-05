@@ -16,9 +16,10 @@ import java.util.concurrent.Executors;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.utils.FileUpload;
+/*
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Document;*/
 
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.*;
@@ -152,14 +153,15 @@ public class MyEventListener extends ListenerAdapter {
 								"`help misc` - small/miscellaneous commands\r\n" +
 								"\r\n" +
 								"`boby help-music` or `m!help-music` - music playback via JMusicBot\r\n" +
-								"`s!/boby funhelp` or `f!help`- Fun:tm: command information").queue();
+								"`s!/boby funhelp` or `f!help`- Fun:tm: command information\r\n" +
+								"`a!help` - server admin command information").queue();
 					}
 					else
 					{
 						String categ = GetArgs(command).get(0);
 
 						System.out.println(categ);
-						if("main".contains(categ))
+						if(categ.equals("main"))
 							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**\n"
 									+ "help - displays help message\r\n" +
 									"ping - approx ping\r\n" +
@@ -180,9 +182,9 @@ public class MyEventListener extends ListenerAdapter {
 									"face (mention) - Sends user's profile picture\r\n" +
 									"ratio (mention) - ratios them\r\n" +
 									"autocrop {video} - tries to automatically detect black bars and crop\r\n" +
-									"ambient - toggles on or off ambient interactions from Boby\r\n" +
+									//"ambient - toggles on or off ambient interactions from Boby\r\n" +
 									"????? - I just wanna tell you how I'm feeling").queue();
-						else if (categ.contains("image") || categ.contains("img"))
+						else if (categ.equals("image") || categ.equals("images") || categ.equals("img"))
 							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**\n"
 									+ "motor [int] - Motor Image Repo\r\n" +
 									"jojo [int] - Jojo Image Repo\r\n" +
@@ -191,7 +193,7 @@ public class MyEventListener extends ListenerAdapter {
 									"addimg {image} - adds the attachment to s!img\r\n" +
 									"addjojo {image} - (doesnt work) adds the attachment to s!jojo\r\n" +
 									"addE {image} - Adds to E image repo").queue();
-						else if (categ.contains("misc"))
+						else if (categ.equals("misc"))
 							channel.sendMessage("**Key: Command (required field) [optional field] {attachment} - what it does**\n"
 									+ "die\r\n" +
 									"dead\r\n" +
@@ -690,42 +692,6 @@ public class MyEventListener extends ListenerAdapter {
 			inputMessage.addReaction(Emoji.fromUnicode("U+1F4AC")).queue();
 			channel.sendMessage(mentionsList.get(0).getAsMention() + " has been ratio’d!").queue();
 		}
-		if(command.startsWith("ambient")) {
-			List<String> exclude = ReadTextFile("exclude.txt");
-			for (String string : exclude) {
-				if(string.contains(event.getGuild().getId())) {
-
-					File inputFile = new File("bot/exclude.txt");
-			        File tempFile = new File("bot/tmpexclude.txt");
-
-			        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-			        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-			        String lineToRemove = event.getGuild().getId();
-			        String currentLine;
-
-			        while((currentLine = reader.readLine()) != null) {
-			            // trim newline when comparing with lineToRemove
-			            String trimmedLine = currentLine.trim();
-			            if(trimmedLine.equals(lineToRemove)) continue;
-			            writer.write(currentLine + System.getProperty("line.separator"));
-			        }
-			        writer.close();
-			        reader.close();
-			        boolean successful = tempFile.renameTo(inputFile);
-			        if (!successful)
-			        	channel.sendMessage("error toggling on").queue();
-			        else
-			        	channel.sendMessage("Toggled ambient messages **on**").queue();
-					return;
-				}
-			}
-			FileWriter fStream = new FileWriter("bot/exclude.txt", true);
-			fStream.append(event.getGuild().getId()).append("\n");
-			fStream.flush();
-			fStream.close();
-			channel.sendMessage("Toggled ambient messages **off**").queue();
-		}
 		if(command.startsWith("restart")) {
 			String l = command.substring(7);
 			if(!(new File(System.getProperty("user.dir") + "/bot/restartaaa.sh").exists())) {
@@ -802,15 +768,18 @@ public class MyEventListener extends ListenerAdapter {
 				}
 				ServerSettings thisServerSettings = GetServerProfile((int)event.getGuild().getIdLong(), channel);
 				if(!event.getMember().getPermissions().contains(Permission.MANAGE_SERVER)) {
-					channel.sendMessage("you're not real").queue();
+					channel.sendMessage("you're not real (acquire `MANAGE_SERVER`)").queue();
 					return;
 				}
 
 
 				if(command.startsWith("help"))
 					channel.sendMessage("Server Management Settings (GPL) 2023 \nYour guild ID is " + event.getGuild().getId()
-							+ "\n\nsetrole <@role> <tag> - adds a tag to a role that can be used with s!get/s!role\n"
-							+ "delrole <@role> - removes all tags from a role").queue();
+							+ "\n\nsetrole <@role> <tag> - adds a tag to a role that can be used with s!get/s!role\r\n"
+							+ "delrole <@role> - removes all tags from a role\r\n"
+							+ "deltag <tag> - removes tag from existence\r\n"
+							+ "printroles - originally a debug feature. may be helpful\r\n"
+							+ "ambient - toggles ambient (unprompted) messages on/off").queue();
 
 				if(command.startsWith("setrole")) {
 					List<Role> mentionsList = inputMessage.getMentions().getRoles();
@@ -871,6 +840,42 @@ public class MyEventListener extends ListenerAdapter {
 				}
 				if(command.startsWith("printroles")) {
 					channel.sendMessage(thisServerSettings.debugfrick()).queue();
+				}
+				if(command.startsWith("ambient")) {
+					List<String> exclude = ReadTextFile("exclude.txt");
+					for (String string : exclude) {
+						if(string.contains(event.getGuild().getId())) {
+
+							File inputFile = new File("bot/exclude.txt");
+							File tempFile = new File("bot/tmpexclude.txt");
+
+							BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+							BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+							String lineToRemove = event.getGuild().getId();
+							String currentLine;
+
+							while((currentLine = reader.readLine()) != null) {
+								// trim newline when comparing with lineToRemove
+								String trimmedLine = currentLine.trim();
+								if(trimmedLine.equals(lineToRemove)) continue;
+								writer.write(currentLine + System.getProperty("line.separator"));
+							}
+							writer.close();
+							reader.close();
+							boolean successful = tempFile.renameTo(inputFile);
+							if (!successful)
+								channel.sendMessage("error toggling on").queue();
+							else
+								channel.sendMessage("Toggled ambient messages **on**").queue();
+							return;
+						}
+					}
+					FileWriter fStream = new FileWriter("bot/exclude.txt", true);
+					fStream.append(event.getGuild().getId()).append("\n");
+					fStream.flush();
+					fStream.close();
+					channel.sendMessage("Toggled ambient messages **off**").queue();
 				}
 
 				//save database or somethin
@@ -1490,7 +1495,7 @@ public class MyEventListener extends ListenerAdapter {
 		}
 	}
 
-	private void AutoCropVideo(Message inputMessage, boolean autoautocrop) throws InterruptedException, IOException {
+	private void AutoCropVideo(Message inputMessage, boolean autoautocrop) {
 		CompletableFuture.runAsync(() -> {
 			DeleteFiles("autocrop");
 			String filename;
@@ -1545,6 +1550,7 @@ public class MyEventListener extends ListenerAdapter {
 
 			//upload
 			inputMessage.addReaction(uploading).queue();
+			assert filename != null;
 			int dotindex = filename.lastIndexOf('.');
 			String newfilename = filename.substring(0, dotindex) + "_autocrop" + filename.substring(dotindex);
 			File cropDir = new File(System.getProperty("user.dir") + "/bot/autocrop/");
